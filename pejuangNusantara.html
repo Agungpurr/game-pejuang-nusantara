@@ -966,6 +966,229 @@
         cursor: pointer;
         font-family: "Press Start 2P", monospace;
       }
+
+      /* MOBILE CONTROLS - Virtual Joystick & Buttons */
+      #mobile-controls {
+        position: fixed;
+        bottom: 20px;
+        left: 0;
+        right: 0;
+        z-index: 150;
+        pointer-events: none;
+        display: none;
+      }
+
+      #mobile-controls.show {
+        display: block;
+      }
+
+      /* Joystick Container */
+      .joystick-container {
+        position: fixed;
+        bottom: 80px;
+        left: 20px;
+        width: 120px;
+        height: 120px;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 60px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        pointer-events: auto;
+        touch-action: none;
+      }
+
+      .joystick-base {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 60px;
+        background: rgba(30, 30, 50, 0.6);
+      }
+
+      .joystick-thumb {
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        background: rgba(245, 197, 24, 0.8);
+        border-radius: 25px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 10px rgba(245, 197, 24, 0.5);
+        transition: transform 0.05s;
+      }
+
+      /* Skill Buttons Container */
+      .skill-buttons-mobile {
+        position: fixed;
+        bottom: 20px;
+        right: 10px;
+        display: flex;
+        gap: 12px;
+        pointer-events: auto;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        max-width: 200px;
+      }
+
+      .skill-btn-mobile {
+        width: 55px;
+        height: 55px;
+        background: linear-gradient(135deg, #2a2a4a, #1a1a3a);
+        border: 2px solid var(--gold);
+        border-radius: 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.1s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        touch-action: manipulation;
+      }
+
+      .skill-btn-mobile:active {
+        transform: scale(0.95);
+        background: linear-gradient(135deg, #3a3a6a, #2a2a5a);
+      }
+
+      .skill-btn-mobile.locked {
+        opacity: 0.4;
+        filter: grayscale(0.5);
+        border-color: #666;
+      }
+
+      .skill-btn-mobile .sk-icon-mobile {
+        font-size: 24px;
+      }
+
+      .skill-btn-mobile .sk-name-mobile {
+        font-size: 6px;
+        color: var(--cream);
+        margin-top: 2px;
+      }
+
+      .skill-btn-mobile .sk-cd-mobile {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        color: var(--gold);
+      }
+
+      /* Attack Button */
+      .attack-btn-mobile {
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, #e84040, #b83030);
+        border: 2px solid var(--gold);
+        border-radius: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        pointer-events: auto;
+        box-shadow: 0 4px 15px rgba(232, 64, 64, 0.4);
+        touch-action: manipulation;
+      }
+
+      .attack-btn-mobile:active {
+        transform: scale(0.95);
+      }
+
+      .attack-btn-mobile span {
+        font-size: 32px;
+      }
+
+      /* Shop Button Mobile */
+      .shop-btn-mobile {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        width: 45px;
+        height: 45px;
+        background: rgba(0, 0, 0, 0.6);
+        border: 2px solid var(--gold);
+        border-radius: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        pointer-events: auto;
+        z-index: 160;
+        font-size: 20px;
+      }
+
+      /* Mobile Orientation Warning */
+      #orientation-warning {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 1000;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+        font-family: "Press Start 2P", monospace;
+      }
+
+      #orientation-warning.show {
+        display: flex;
+      }
+
+      .orientation-icon {
+        font-size: 60px;
+        margin-bottom: 20px;
+        animation: rotate 1.5s ease-in-out infinite;
+      }
+
+      @keyframes rotate {
+        0%,
+        100% {
+          transform: rotate(0deg);
+        }
+        50% {
+          transform: rotate(90deg);
+        }
+      }
+
+      /* Mobile Responsive Adjustments */
+      @media (max-width: 768px) {
+        .csel-row {
+          gap: 12px;
+          padding: 8px;
+        }
+
+        .cc {
+          min-width: 240px;
+          width: 240px;
+        }
+
+        .tab-content {
+          max-height: 120px;
+        }
+
+        #ctrl-hint {
+          display: none;
+        }
+
+        #topbar .tb-seg {
+          font-size: 5px;
+          padding: 0 6px;
+        }
+
+        .hb-track {
+          width: 60px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -3505,6 +3728,9 @@
       let angelInterval = null;
       let angelBuffActive = false;
       let angelBuffTimer = 0;
+      let currentMapTheme = "normal"; // normal, lava, meteo, space
+      let mapThemeCycle = ["normal", "lava", "meteo", "space"];
+      let meteorTimer = 0; // Timer untuk hujan meteor (mode meteo)
       // Di bagian GAME STATE, tambahkan:
       let bossSpawnTimer = 0;
       let currentBoss = null; // Untuk menyimpan lord yang sedang aktif
@@ -3568,19 +3794,118 @@
       }
 
       function tileColor(t) {
-        if (isNightMode) {
-          // Mode malam - warna lebih gelap
-          if (t === 1) return ["#4a5a3a", "#3a4a2a"]; // Path lebih gelap
-          if (t === 2) return ["#1a2a1a", "#0e1a0e"]; // Pepohonan lebih gelap
-          if (t === 3) return ["#1a4a7a", "#0a3a6a"]; // Air lebih gelap
-          return ["#2a5a2a", "#1e4a1e"]; // Rumput lebih gelap
-        } else {
-          // Mode siang (normal)
-          if (t === 1) return ["#c8a070", "#b89060"];
-          if (t === 2) return ["#2a4a1a", "#1e3812"];
-          if (t === 3) return ["#3a80d9", "#2a70c9"];
-          return ["#5a9e3a", "#4e8c30"];
+        // Pilih warna dasar berdasarkan THEME (bukan mode malam)
+        let baseColor1, baseColor2;
+
+        switch (currentMapTheme) {
+          case "lava":
+            if (t === 0) {
+              baseColor1 = "#b85a1a";
+              baseColor2 = "#a84a0a";
+            } // Rumput jadi merah-oranye
+            else if (t === 1) {
+              baseColor1 = "#e86a2a";
+              baseColor2 = "#d85a1a";
+            } // Path jadi lava
+            else if (t === 2) {
+              baseColor1 = "#5a3a1a";
+              baseColor2 = "#4a2a0a";
+            } // Hutan jadi abu
+            else if (t === 3) {
+              baseColor1 = "#d87a3a";
+              baseColor2 = "#c86a2a";
+            } // Air jadi lava cair
+            else {
+              baseColor1 = "#c86a2a";
+              baseColor2 = "#b85a1a";
+            }
+            break;
+
+          case "meteo":
+            if (t === 0) {
+              baseColor1 = "#4a4a6a";
+              baseColor2 = "#3a3a5a";
+            } // Ungu kebiruan
+            else if (t === 1) {
+              baseColor1 = "#6a6a8a";
+              baseColor2 = "#5a5a7a";
+            } // Path abu-abu kebiruan
+            else if (t === 2) {
+              baseColor1 = "#2a2a4a";
+              baseColor2 = "#1a1a3a";
+            } // Hutan gelap
+            else if (t === 3) {
+              baseColor1 = "#7a7aaa";
+              baseColor2 = "#6a6a9a";
+            } // Air seperti kristal
+            else {
+              baseColor1 = "#5a5a7a";
+              baseColor2 = "#4a4a6a";
+            }
+            break;
+
+          case "space":
+            if (t === 0) {
+              baseColor1 = "#1a1a3a";
+              baseColor2 = "#0a0a2a";
+            } // Hitam kebiruan
+            else if (t === 1) {
+              baseColor1 = "#2a2a5a";
+              baseColor2 = "#1a1a4a";
+            } // Path gelap dengan bintang
+            else if (t === 2) {
+              baseColor1 = "#0a0a2a";
+              baseColor2 = "#05051a";
+            } // Hutan sangat gelap
+            else if (t === 3) {
+              baseColor1 = "#3a3a8a";
+              baseColor2 = "#2a2a7a";
+            } // Air seperti nebula
+            else {
+              baseColor1 = "#2a2a4a";
+              baseColor2 = "#1a1a3a";
+            }
+            break;
+
+          default: // normal
+            if (t === 1) {
+              baseColor1 = "#c8a070";
+              baseColor2 = "#b89060";
+            } else if (t === 2) {
+              baseColor1 = "#2a4a1a";
+              baseColor2 = "#1e3812";
+            } else if (t === 3) {
+              baseColor1 = "#3a80d9";
+              baseColor2 = "#2a70c9";
+            } else {
+              baseColor1 = "#5a9e3a";
+              baseColor2 = "#4e8c30";
+            }
         }
+
+        // APLIKASIKAN MODE MALAM (overlay gelap)
+        if (isNightMode) {
+          // Gelapkan warna theme
+          const darken = (color) => {
+            // Fungsi sederhana untuk menggelapkan warna
+            if (color === "#c8a070") return "#6a5a3a";
+            if (color === "#b89060") return "#5a4a2a";
+            if (color === "#2a4a1a") return "#1a2a0a";
+            if (color === "#1e3812") return "#0e1a0a";
+            if (color === "#3a80d9") return "#1a4a7a";
+            if (color === "#2a70c9") return "#0a3a6a";
+            if (color === "#5a9e3a") return "#2a5a2a";
+            if (color === "#4e8c30") return "#1e4a1e";
+            // Untuk warna theme lava, meteo, space
+            return color.replace(/[0-9a-f]{2}/gi, (c) => {
+              const val = Math.max(0, parseInt(c, 16) - 40);
+              return val.toString(16).padStart(2, "0");
+            });
+          };
+          return [darken(baseColor1), darken(baseColor2)];
+        }
+
+        return [baseColor1, baseColor2];
       }
 
       function drawWall(ctx, x, y, hp, maxHp, duration) {
@@ -4211,6 +4536,49 @@
         ctx.restore();
       }
 
+      // Fungsi untuk mengubah theme map berdasarkan stage
+      function updateMapThemeByStage(stageNum) {
+        // Siklus: Stage 1: normal, Stage 2: lava, Stage 3: meteo, Stage 4: space, Stage 5: normal, dst
+        const themeIndex = (stageNum - 1) % 4;
+        currentMapTheme = mapThemeCycle[themeIndex];
+
+        console.log(
+          `🌍 Stage ${stageNum} - Theme: ${currentMapTheme.toUpperCase()}`,
+        );
+
+        // Tambahkan notifikasi ke killfeed
+        let themeMessage = "";
+        let themeColor = "";
+        switch (currentMapTheme) {
+          case "lava":
+            themeMessage = "🌋 THEME LAVA! Tanah membara! 🔥";
+            themeColor = "#ff8844";
+            break;
+          case "meteo":
+            themeMessage = "☄️ THEME METEOR! Hujan meteor setiap 20 detik! 💥";
+            themeColor = "#aa66ff";
+            break;
+          case "space":
+            themeMessage =
+              "🚀 THEME SPACE! Gravitasi rendah! Kecepatan semua unit +30%! 🌌";
+            themeColor = "#88aaff";
+            break;
+          default:
+            themeMessage = "🌿 THEME NORMAL! Kembali ke alam asli! 🍃";
+            themeColor = "#88ff88";
+        }
+
+        addKillFeed(themeMessage, themeColor);
+
+        // Efek visual pergantian theme
+        if (gameActive) {
+          spawnExplosion(playerBase.x, playerBase.y, themeColor, 200);
+          setTimeout(() => {
+            spawnExplosion(enemyBase.x, enemyBase.y, themeColor, 200);
+          }, 500);
+        }
+      }
+
       function drawPoisonBlades(ctx, playerX, playerY, camX, camY, angle) {
         const bladeCount = 10;
         const radius = 45;
@@ -4366,7 +4734,7 @@
           skin: "#8090a0",
           shirt: "#445566",
           hat: "#334455",
-          hp: 520,
+          hp: 20, //520
           atk: 22,
           def: 6,
           spd: 1.6,
@@ -4380,11 +4748,11 @@
           skin: "#9090a0",
           shirt: "#556644",
           hat: "#334422",
-          hp: 85,
+          hp: 8, //85
           atk: 28,
           def: 5,
           spd: 0.9,
-          range: 180,
+          range: 70,
           atkCD: 0.5,
           score: 20,
           xpGive: 28,
@@ -4394,7 +4762,7 @@
           skin: "#808090",
           shirt: "#665544",
           hat: "#443322",
-          hp: 640,
+          hp: 40, //640
           atk: 38,
           def: 20,
           spd: 1.0,
@@ -4408,7 +4776,7 @@
           skin: "#a09080",
           shirt: "#884422",
           hat: "#552200",
-          hp: 880,
+          hp: 80, //880
           atk: 52,
           def: 24,
           spd: 2.0,
@@ -4422,7 +4790,7 @@
           skin: "#ff4444",
           shirt: "#8b0000",
           hat: "#4a0000",
-          hp: 1200,
+          hp: 200, //1200
           atk: 80,
           def: 40,
           spd: 1.5,
@@ -7389,8 +7757,77 @@
               bgCtx.font = "28px serif";
               bgCtx.textAlign = "center";
               bgCtx.textBaseline = "middle";
-              bgCtx.fillStyle = isNightMode ? "#2a5a2a" : "#5a8a4a";
-              bgCtx.fillText("🌲", tx + TILE / 2, ty + TILE / 2);
+              // Icon pepohonan berbeda berdasarkan theme
+              if (currentMapTheme === "lava") {
+                bgCtx.fillStyle = "#ffaa66";
+                bgCtx.fillText("🌋", tx + TILE / 2, ty + TILE / 2);
+              } else if (currentMapTheme === "meteo") {
+                bgCtx.fillStyle = "#cc88ff";
+                bgCtx.fillText("☄️", tx + TILE / 2, ty + TILE / 2);
+              } else if (currentMapTheme === "space") {
+                bgCtx.fillStyle = "#88aaff";
+                bgCtx.fillText("⭐", tx + TILE / 2, ty + TILE / 2);
+              } else {
+                bgCtx.fillStyle = isNightMode ? "#2a5a2a" : "#5a8a4a";
+                bgCtx.fillText("🌲", tx + TILE / 2, ty + TILE / 2);
+              }
+            }
+          }
+        }
+
+        // ========== EFEK THEME TAMBAHAN ==========
+
+        // Efek Theme LAVA (partikel api di tanah)
+        if (currentMapTheme === "lava" && gameActive) {
+          for (let i = 0; i < 5; i++) {
+            if (Math.random() < 0.05) {
+              const randX = cam.x + Math.random() * W;
+              const randY = cam.y + Math.random() * H;
+              particles.push({
+                x: randX,
+                y: randY,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: -0.5 - Math.random() * 1,
+                life: 0.5,
+                maxLife: 0.5,
+                r: 2 + Math.random() * 4,
+                color: "#ff8844",
+              });
+            }
+          }
+        }
+
+        // Efek Theme METEO (bintang jatuh di background)
+        if (currentMapTheme === "meteo" && gameActive) {
+          if (Math.random() < 0.02) {
+            const startX = cam.x + Math.random() * W;
+            const startY = cam.y + Math.random() * 50;
+            for (let i = 0; i < 8; i++) {
+              particles.push({
+                x: startX + i * 15,
+                y: startY + i * 8,
+                vx: (Math.random() - 0.5) * 2,
+                vy: (Math.random() - 0.5) * 1,
+                life: 0.3,
+                maxLife: 0.3,
+                r: 2,
+                color: "#ffaa88",
+              });
+            }
+          }
+        }
+
+        // Efek Theme SPACE (bintang berkelap-kelip)
+        if (currentMapTheme === "space") {
+          const starCount = 50;
+          for (let i = 0; i < starCount; i++) {
+            if (Math.random() < 0.01) {
+              const starX = cam.x + Math.random() * W;
+              const starY = cam.y + Math.random() * H;
+              bgCtx.fillStyle = `rgba(255, 255, 200, ${0.3 + Math.random() * 0.7})`;
+              bgCtx.beginPath();
+              bgCtx.arc(starX, starY, 1 + Math.random() * 2, 0, Math.PI * 2);
+              bgCtx.fill();
             }
           }
         }
@@ -9351,6 +9788,94 @@
             addKillFeed(`🗿 Susanoo Tanah telah menghilang!`, "#ccaa88");
           }
         }
+
+        // Di dalam gameLoop(), setelah update oil spills, tambahkan:
+
+        // ========== EFEK THEME METEOR ==========
+        if (currentMapTheme === "meteo" && gameActive) {
+          meteorTimer -= dt;
+          if (meteorTimer <= 0) {
+            meteorTimer = 20; // Setiap 20 detik
+
+            // Hujan meteor
+            const meteorCount = 3 + Math.floor(Math.random() * 4);
+            for (let i = 0; i < meteorCount; i++) {
+              setTimeout(() => {
+                const meteorX = cam.x + Math.random() * W;
+                const meteorY = cam.y - 50;
+                const targetX = meteorX + (Math.random() - 0.5) * 200;
+                const targetY = meteorY + 400;
+
+                // Damage area
+                enemies.forEach((enemy) => {
+                  if (
+                    !enemy.dead &&
+                    dist2Plain(enemy.x, enemy.y, targetX, targetY) < 100
+                  ) {
+                    dealDamage(enemy, ri(50, 100), null, "burn");
+                    enemy.burnTimer = 3;
+                  }
+                });
+
+                // Efek meteor
+                spawnExplosion(targetX, targetY, "#ff8844", 80);
+                addKillFeed("☄️ HUJAN METEOR! WASPADA! ☄️", "#ffaa66");
+              }, i * 300);
+            }
+          }
+        }
+
+        // ========== EFEK THEME LAVA ==========
+        if (currentMapTheme === "lava" && gameActive) {
+          // Damage burn untuk semua unit di rumput (tile 0)
+          enemies.forEach((enemy) => {
+            if (!enemy.dead) {
+              const tileC = Math.floor(enemy.x / TILE);
+              const tileR = Math.floor(enemy.y / TILE);
+              if (tileR >= 0 && tileR < ROWS && tileC >= 0 && tileC < COLS) {
+                const terrain = TMAP[tileR][tileC];
+                if (terrain === 0 && Math.random() < 0.05) {
+                  if (!enemy.lavaBurned) {
+                    enemy.lavaBurned = true;
+                    dealDamage(enemy, ri(5, 15), null, "burn");
+                    setTimeout(() => {
+                      if (enemy) enemy.lavaBurned = false;
+                    }, 1000);
+                  }
+                }
+              }
+            }
+          });
+        }
+
+        // ========== EFEK THEME SPACE ==========
+        if (currentMapTheme === "space" && gameActive) {
+          // Kecepatan semua unit +30% (gravitasi rendah)
+          if (player && !player.dead && !player.spaceSpeedBuff) {
+            player.spaceSpeedBuff = true;
+            player.originalSpd = player.spd;
+            player.spd = player.spd * 1.3;
+          }
+
+          // Efek anti-gravitasi (partikel melayang)
+          if (Math.random() < 0.05) {
+            particles.push({
+              x: player.x + (Math.random() - 0.5) * 80,
+              y: player.y + (Math.random() - 0.5) * 80,
+              vx: (Math.random() - 0.5) * 0.3,
+              vy: (Math.random() - 0.5) * 0.3 - 0.2,
+              life: 1.5,
+              maxLife: 1.5,
+              r: 1 + Math.random() * 2,
+              color: "#88aaff",
+            });
+          }
+        } else if (player && player.spaceSpeedBuff) {
+          // Reset speed saat keluar dari mode space
+          player.spd = player.originalSpd;
+          player.spaceSpeedBuff = false;
+        }
+
         // Di dalam gameLoop(), setelah update animals, tambahkan:
         // Update portal
         if (portalActive) {
@@ -9740,6 +10265,18 @@
         // TAMBAHKAN: Aktifkan mode malam jika stage 2 atau lebih
         isNightMode = stage >= 2;
 
+        // ========== UPDATE MAP THEME BERDASARKAN STAGE ==========
+        updateMapThemeByStage(stage);
+
+        // Reset efek space jika sebelumnya aktif
+        if (player && player.spaceSpeedBuff) {
+          player.spd = player.originalSpd;
+          player.spaceSpeedBuff = false;
+        }
+
+        // Reset meteor timer
+        meteorTimer = 0;
+
         // Heal player partially
         player.hp = Math.min(
           player.maxHp,
@@ -10071,7 +10608,9 @@
         respawning = false;
         bossKilled = false;
         stage = 1;
+        currentMapTheme = "normal";
         isNightMode = false;
+        meteorTimer = 0;
 
         // Inisialisasi LORD
         lordSpawnTimer = 480;
