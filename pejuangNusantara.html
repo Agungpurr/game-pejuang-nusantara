@@ -1043,6 +1043,8 @@
         cursor: pointer;
         transition: all 0.1s ease;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        pointer-events: auto;
+        z-index: 200;
         touch-action: manipulation;
       }
 
@@ -1400,6 +1402,29 @@
         id="got-msg"
       ></div>
       <button class="gob" onclick="location.reload()">↺ MAIN LAGI</button>
+    </div>
+
+    <!-- MOBILE CONTROLS -->
+    <div id="mobile-controls">
+      <div class="joystick-container" id="joystick-container">
+        <div class="joystick-base"></div>
+        <div class="joystick-thumb" id="joystick-thumb"></div>
+      </div>
+      <div class="skill-buttons-mobile" id="skill-buttons-mobile"></div>
+      <!-- <div class="attack-btn-mobile" id="attack-btn-mobile">
+        <span>⚔️</span>
+      </div> -->
+      <!-- <div class="shop-btn-mobile" id="shop-btn-mobile">🛒</div> -->
+    </div>
+
+    <div id="orientation-warning">
+      <div class="orientation-icon">📱➡️🔄</div>
+      <div style="font-size: 14px; margin-bottom: 10px">
+        PUTAR KE MODE LANDSCAPE
+      </div>
+      <div style="font-size: 10px; color: #aaa">
+        Untuk pengalaman bermain terbaik, putar ponsel Anda ke posisi horizontal
+      </div>
     </div>
 
     <script>
@@ -5274,6 +5299,10 @@
       // SKILLS
       // ================================================================
       function useSkill(idx) {
+        console.log(`========== useSkill CALLED ==========`);
+        console.log(`Parameter idx: ${idx}`);
+        console.log(`Skill name: ${player?.skills[idx]?.name}`);
+        console.log(`skillCDs before:`, [...skillCDs]);
         playSkill();
         if (!player || player.dead || respawning || shopOpen) return;
         const sk = player.skills[idx];
@@ -7599,12 +7628,10 @@
         const cont = document.getElementById("skill-slots");
         if (!player) return;
         cont.innerHTML = "";
-        // Urutan skill: 1, 2, 3, 4, 5
         const keyLabels = ["1", "2", "3", "4", "5", "6"];
         player.skills.forEach((sk, i) => {
           const btn = document.createElement("div");
           btn.className = "sk-btn" + (sk.locked ? " locked" : "");
-          // TAMBAHKAN: Cek apakah MP cukup
           const hasEnoughMp = player.mp >= sk.mp;
           if (!hasEnoughMp && !sk.locked && skillCDs[i] <= 0) {
             btn.style.opacity = "0.6";
@@ -7626,6 +7653,11 @@
           btn.onclick = () => useSkill(i);
           cont.appendChild(btn);
         });
+
+        // ========== PERBAIKAN: Update mobile skill bar hanya jika perlu ==========
+        // Jangan panggil setiap kali updateSkillBar dipanggil
+        // Hanya panggil sekali setelah game start
+        // Hapus baris ini: updateMobileSkillBar();
       }
 
       // Tambahkan di dalam fungsi updateTopBar() atau di gameLoop
@@ -7661,6 +7693,7 @@
       }
 
       function updateMinimap() {
+        if (!mmCtx) return;
         mmCtx.clearRect(0, 0, 120, 90);
         mmCtx.fillStyle = "rgba(0,0,0,.5)";
         mmCtx.fillRect(0, 0, 120, 90);
@@ -9335,35 +9368,63 @@
         timerStr = (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
         document.getElementById("timer-display").textContent = timerStr;
 
-        // Input
+        // ========== INPUT HANDLING ==========
         if (!player.dead && !respawning && !shopOpen) {
-          let vx = 0,
-            vy = 0;
-          if (keys["KeyW"] || keys["ArrowUp"])
-            vy = -player.spd * (playerSpeedMult || 1);
-          if (keys["KeyS"] || keys["ArrowDown"])
-            vy = player.spd * (playerSpeedMult || 1);
-          if (keys["KeyA"] || keys["ArrowLeft"]) {
-            vx = -player.spd * (playerSpeedMult || 1);
-            player.dir = -1;
+          // Cek apakah ini mobile (dengan joystick aktif)
+          const isMobile =
+            /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+              navigator.userAgent,
+            );
+
+          if (isMobile && mobileJoystick) {
+            // Gunakan input mobile (joystick + tombol)
+            handleMobileInput();
+          } else {
+            // Gunakan keyboard (desktop)
+            let vx = 0,
+              vy = 0;
+            if (keys["KeyW"] || keys["ArrowUp"])
+              vy = -player.spd * (playerSpeedMult || 1);
+            if (keys["KeyS"] || keys["ArrowDown"])
+              vy = player.spd * (playerSpeedMult || 1);
+            if (keys["KeyA"] || keys["ArrowLeft"]) {
+              vx = -player.spd * (playerSpeedMult || 1);
+              player.dir = -1;
+            }
+            if (keys["KeyD"] || keys["ArrowRight"]) {
+              vx = player.spd * (playerSpeedMult || 1);
+              player.dir = 1;
+            }
+            if (vx && vy) {
+              vx *= 0.707;
+              vy *= 0.707;
+            }
+            player.vx = vx;
+            player.vy = vy;
           }
-          if (keys["KeyD"] || keys["ArrowRight"]) {
-            vx = player.spd * (playerSpeedMult || 1);
-            player.dir = 1;
-          }
-          if (vx && vy) {
-            vx *= 0.707;
-            vy *= 0.707;
-          }
-          player.vx = vx;
-          player.vy = vy;
+
           player.atkTimer = Math.max(0, (player.atkTimer || 0) - dt);
+
+          // Keyboard skills (tetap support untuk desktop)
           if (keys["Digit1"]) useSkill(0);
           if (keys["Digit2"]) useSkill(1);
           if (keys["Digit3"]) useSkill(2);
           if (keys["Digit4"]) useSkill(3);
           if (keys["Digit5"]) useSkill(4);
           if (keys["Digit6"]) useSkill(5);
+        }
+
+        // ========== PERBAIKAN: HANYA SATU KALI PANGGIL updateMobileCDs ==========
+        const isMobile =
+          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+            navigator.userAgent,
+          );
+        if (isMobile && typeof updateMobileCDs === "function") {
+          try {
+            updateMobileCDs();
+          } catch (e) {
+            console.warn("updateMobileCDs error:", e);
+          }
         }
 
         // Update player
@@ -10132,6 +10193,8 @@
         for (let i = 0; i < 6; i++)
           if (skillCDs[i] > 0) skillCDs[i] = Math.max(0, skillCDs[i] - dt);
 
+        if (typeof updateMobileCDs === "function") updateMobileCDs();
+
         // Particles/effects
         particles = particles.filter((p) => {
           p.x += p.vx;
@@ -10566,8 +10629,6 @@
       function startGame() {
         if (!selectedHero) return;
 
-        // Hapus semua event listener audio dari sini!
-
         document.getElementById("char-select").style.display = "none";
         document.getElementById("tb-heroname").textContent = selectedHero.name;
 
@@ -10601,7 +10662,6 @@
         gameTime = 0;
         spawnTimer = 5;
         allySpawnTimer = 20;
-        // Reset Earth Susanoo
         earthSusanooActive = false;
         earthSusanooTimer = 0;
         earthSusanooDamageReduction = 0;
@@ -10611,12 +10671,9 @@
         currentMapTheme = "normal";
         isNightMode = false;
         meteorTimer = 0;
-
-        // Inisialisasi LORD
         lordSpawnTimer = 480;
         currentBoss = null;
         currentAllyLord = null;
-        console.log("🎮 Game started! Lord akan muncul dalam 480 detik");
 
         document.getElementById("stg-num").textContent = "1";
         document.getElementById("tb-etowers").textContent = "3";
@@ -10625,9 +10682,25 @@
           setTimeout(() => {
             if (gameActive) enemies.push(spawnEnemyUnit(0, 1));
           }, i * 1200);
+
         updateSkillBar();
         updateTopBar();
+
+        // ========== PERBAIKAN: Set gameActive = true DULU ==========
         gameActive = true;
+
+        // ========== PERBAIKAN: Inisialisasi mobile skill bar SEKALI ==========
+        if (
+          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+            navigator.userAgent,
+          )
+        ) {
+          // Beri sedikit delay untuk memastikan DOM siap
+          setTimeout(() => {
+            initMobileSkillBar();
+          }, 100);
+        }
+
         lastTime = performance.now();
         requestAnimationFrame(gameLoop);
       }
@@ -10661,6 +10734,7 @@
           ].includes(e.code)
         )
           e.preventDefault();
+        initMobileControls();
       });
       document.addEventListener("keyup", (e) => {
         keys[e.code] = false;
@@ -11180,6 +11254,419 @@
         sfxVolume = val / 100;
         if (sfxGain && sfxOn) sfxGain.gain.value = sfxVolume;
       }
+
+      // ================================================================
+      // MOBILE CONTROLS
+      // ================================================================
+      let mobileJoystick = {
+        active: false,
+        startX: 0,
+        startY: 0,
+        currentX: 0,
+        currentY: 0,
+        vx: 0,
+        vy: 0,
+      };
+      let mobileAttackPressed = false;
+      let mobileSkillPressed = {};
+
+      function initMobileControls() {
+        const isMobile =
+          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+            navigator.userAgent,
+          );
+        if (!isMobile) return;
+
+        const mobileControls = document.getElementById("mobile-controls");
+        if (!mobileControls) return;
+
+        mobileControls.classList.add("show");
+
+        checkOrientation();
+        window.addEventListener("orientationchange", checkOrientation);
+        window.addEventListener("resize", checkOrientation);
+
+        initJoystick();
+
+        // ========== PERBAIKAN: Jangan panggil updateMobileSkillBar di sini ==========
+        // Hapus baris: updateMobileSkillBar();
+
+        // const attackBtn = document.getElementById("attack-btn-mobile");
+        // if (attackBtn) {
+        //   attackBtn.addEventListener("touchstart", (e) => {
+        //     e.preventDefault();
+        //     mobileAttackPressed = true;
+        //   });
+        //   attackBtn.addEventListener("touchend", () => {
+        //     mobileAttackPressed = false;
+        //   });
+        //   attackBtn.addEventListener("touchcancel", () => {
+        //     mobileAttackPressed = false;
+        //   });
+        // }
+
+        // const shopBtnMobile = document.getElementById("shop-btn-mobile");
+        // if (shopBtnMobile) {
+        //   shopBtnMobile.addEventListener("click", () => {
+        //     toggleShop();
+        //   });
+        // }
+
+        const ctrlHint = document.getElementById("ctrl-hint");
+        if (ctrlHint) ctrlHint.style.display = "none";
+      }
+
+      function checkOrientation() {
+        const warning = document.getElementById("orientation-warning");
+        if (window.innerHeight > window.innerWidth) {
+          warning.classList.add("show");
+        } else {
+          warning.classList.remove("show");
+        }
+      }
+
+      function initJoystick() {
+        const container = document.getElementById("joystick-container");
+        const thumb = document.getElementById("joystick-thumb");
+        const maxDistance = 35;
+
+        const handleStart = (e) => {
+          e.preventDefault();
+          mobileJoystick.active = true;
+          const touch = e.touches ? e.touches[0] : e;
+          const rect = container.getBoundingClientRect();
+          mobileJoystick.startX = touch.clientX;
+          mobileJoystick.startY = touch.clientY;
+          mobileJoystick.centerX = rect.left + rect.width / 2;
+          mobileJoystick.centerY = rect.top + rect.height / 2;
+        };
+
+        const handleMove = (e) => {
+          if (!mobileJoystick.active) return;
+          e.preventDefault();
+          const touch = e.touches ? e.touches[0] : e;
+          let dx = touch.clientX - mobileJoystick.startX;
+          let dy = touch.clientY - mobileJoystick.startY;
+
+          // Batasi jarak
+          const distance = Math.hypot(dx, dy);
+          if (distance > maxDistance) {
+            dx = (dx / distance) * maxDistance;
+            dy = (dy / distance) * maxDistance;
+          }
+
+          // Update thumb position
+          thumb.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+
+          // Hitung arah joystick (nilai -1 sampai 1)
+          mobileJoystick.vx = dx / maxDistance;
+          mobileJoystick.vy = dy / maxDistance;
+        };
+
+        const handleEnd = () => {
+          mobileJoystick.active = false;
+          mobileJoystick.vx = 0;
+          mobileJoystick.vy = 0;
+          thumb.style.transform = "translate(-50%, -50%)";
+        };
+
+        container.addEventListener("touchstart", handleStart);
+        container.addEventListener("touchmove", handleMove);
+        container.addEventListener("touchend", handleEnd);
+        container.addEventListener("touchcancel", handleEnd);
+
+        // Mouse support untuk testing di desktop
+        container.addEventListener("mousedown", handleStart);
+        window.addEventListener("mousemove", handleMove);
+        window.addEventListener("mouseup", handleEnd);
+      }
+
+      function updateMobileSkillBar() {
+        if (!player) {
+          console.log("updateMobileSkillBar: no player");
+          return;
+        }
+
+        const container = document.getElementById("skill-buttons-mobile");
+        if (!container) {
+          console.warn("skill-buttons-mobile container not found!");
+          return;
+        }
+
+        console.log(
+          "Updating mobile skill bar, player skills:",
+          player.skills.length,
+        );
+        container.innerHTML = "";
+
+        player.skills.forEach((sk, i) => {
+          const btn = document.createElement("div");
+          btn.className = "skill-btn-mobile" + (sk.locked ? " locked" : "");
+          btn.setAttribute("data-skill-idx", i);
+          btn.innerHTML = `
+            <span class="sk-icon-mobile">${sk.icon}</span>
+            <span class="sk-name-mobile">${sk.name}</span>
+        `;
+
+          if (skillCDs[i] > 0 && !sk.locked) {
+            const cdDiv = document.createElement("div");
+            cdDiv.className = "sk-cd-mobile";
+            cdDiv.textContent = Math.ceil(skillCDs[i]);
+            btn.appendChild(cdDiv);
+          } else if (sk.locked) {
+            const lockDiv = document.createElement("div");
+            lockDiv.className = "sk-cd-mobile";
+            lockDiv.textContent = `Lv${sk.unlockLv}`;
+            btn.appendChild(lockDiv);
+          }
+
+          // ========== PERBAIKAN: Gunakan satu event handler yang konsisten ==========
+          const skillHandler = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            console.log(`Skill button ${i} pressed:`, sk.name);
+            console.log(
+              "Game state - gameActive:",
+              gameActive,
+              "player dead:",
+              player?.dead,
+              "respawning:",
+              respawning,
+              "shopOpen:",
+              shopOpen,
+            );
+
+            // Cek kondisi game
+            if (!gameActive) {
+              console.log("Game not active");
+              return;
+            }
+            if (!player || player.dead) {
+              console.log("Player dead or null");
+              return;
+            }
+            if (respawning) {
+              console.log("Respawning");
+              return;
+            }
+            if (shopOpen) {
+              console.log("Shop open");
+              return;
+            }
+            if (sk.locked) {
+              console.log("Skill locked");
+              return;
+            }
+            if (skillCDs[i] > 0) {
+              console.log("Skill on cooldown:", skillCDs[i]);
+              return;
+            }
+            if (player.mp < sk.mp) {
+              console.log("Not enough MP:", player.mp, "/", sk.mp);
+              showMPWarning();
+              return;
+            }
+
+            console.log("Calling useSkill for index:", i);
+            useSkill(i);
+          };
+
+          // Hanya gunakan addEventListener, jangan pakai onclick
+          btn.addEventListener("click", skillHandler);
+          btn.addEventListener("touchstart", skillHandler, { passive: false });
+
+          container.appendChild(btn);
+        });
+
+        console.log(
+          "Mobile skill bar updated, buttons:",
+          container.children.length,
+        );
+      }
+
+      // ========== PERBAIKAN: Fungsi terpisah untuk inisialisasi skill bar mobile ==========
+      let mobileSkillBarInitialized = false;
+
+      function initMobileSkillBar() {
+        if (mobileSkillBarInitialized) return;
+        if (!player) {
+          setTimeout(() => initMobileSkillBar(), 100);
+          return;
+        }
+
+        console.log("INIT Mobile skill bar - called ONCE");
+        const container = document.getElementById("skill-buttons-mobile");
+        if (!container) {
+          console.warn("skill-buttons-mobile container not found!");
+          return;
+        }
+
+        container.innerHTML = "";
+
+        player.skills.forEach((sk, i) => {
+          const btn = document.createElement("div");
+          btn.className = "skill-btn-mobile" + (sk.locked ? " locked" : "");
+          btn.setAttribute("data-skill-idx", i);
+
+          btn.innerHTML = `
+            <span class="sk-icon-mobile">${sk.icon}</span>
+            <span class="sk-name-mobile">${sk.name}</span>
+            <span class="sk-mp-mobile" style="font-size: 8px; color: #88aaff;">${sk.mp} MP</span>
+        `;
+
+          if (sk.locked) {
+            const lockDiv = document.createElement("div");
+            lockDiv.className = "sk-cd-mobile";
+            lockDiv.textContent = `Lv${sk.unlockLv}`;
+            btn.appendChild(lockDiv);
+          }
+
+          // ========== PERBAIKAN: Pastikan idx = i ==========
+          const skillHandler = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const idx = parseInt(btn.getAttribute("data-skill-idx"));
+            console.log(
+              `🔘 Mobile skill button CLICKED - stored idx: ${idx}, current i: ${i}`,
+            );
+            console.log(`Skill name: ${sk.name}`);
+            console.log(`Current skillCDs[${idx}]: ${skillCDs[idx]}`);
+
+            if (!gameActive) {
+              console.log("❌ Game not active");
+              return;
+            }
+            if (!player || player.dead) {
+              console.log("❌ Player dead or null");
+              return;
+            }
+            if (respawning) {
+              console.log("❌ Respawning");
+              return;
+            }
+            if (shopOpen) {
+              console.log("❌ Shop open");
+              return;
+            }
+            if (sk.locked) {
+              console.log(`❌ Skill locked`);
+              return;
+            }
+            if (skillCDs[idx] > 0) {
+              console.log(`❌ Skill on cooldown: ${skillCDs[idx].toFixed(1)}s`);
+              return;
+            }
+            if (player.mp < sk.mp) {
+              console.log(`❌ Not enough MP: ${player.mp}/${sk.mp}`);
+              showMPWarning();
+              return;
+            }
+
+            console.log(`✅ Calling useSkill(${idx})`);
+            useSkill(idx);
+          };
+
+          btn.addEventListener("click", skillHandler);
+          btn.addEventListener("touchstart", skillHandler, { passive: false });
+
+          container.appendChild(btn);
+          console.log(
+            `Created button for skill ${i}: ${sk.name}, CD: ${sk.cd}s`,
+          );
+        });
+
+        mobileSkillBarInitialized = true;
+      }
+
+      function updateMobileCDs() {
+        // Proteksi dasar
+        if (!player || !gameActive) return;
+
+        const btns = document.querySelectorAll(".skill-btn-mobile");
+        if (!btns || btns.length === 0) return;
+
+        btns.forEach((btn) => {
+          // Proteksi: pastikan btn masih ada
+          if (!btn || !btn.isConnected) return;
+
+          const idx = btn.getAttribute("data-skill-idx");
+          if (!idx) return;
+
+          const skillIdx = parseInt(idx);
+          if (isNaN(skillIdx)) return;
+          if (!player.skills || !player.skills[skillIdx]) return;
+
+          const sk = player.skills[skillIdx];
+          let cdOverlay = btn.querySelector(".sk-cd-mobile");
+        });
+      }
+
+      // Override input untuk mobile
+      function handleMobileInput() {
+        if (!player || player.dead || respawning || shopOpen) return;
+
+        // Joystick movement
+        if (
+          mobileJoystick.active ||
+          mobileJoystick.vx !== 0 ||
+          mobileJoystick.vy !== 0
+        ) {
+          const speed = player.spd * (playerSpeedMult || 1);
+          player.vx = mobileJoystick.vx * speed;
+          player.vy = mobileJoystick.vy * speed;
+
+          // Update direction
+          if (Math.abs(mobileJoystick.vx) > 0.1) {
+            player.dir = mobileJoystick.vx > 0 ? 1 : -1;
+          }
+        } else {
+          // Jika joystick tidak aktif, perlambat
+          player.vx *= 0.9;
+          player.vy *= 0.9;
+        }
+
+        // Auto attack (tombol attack)
+        if (mobileAttackPressed && player.atkTimer <= 0 && !shopOpen) {
+          const autoTargets = [...enemies, ...enemyTowers].filter(
+            (e) => !e.dead,
+          );
+          let at = null,
+            ad = 9999;
+          autoTargets.forEach((e) => {
+            const d = dist2(player, e);
+            if (d < ad && d <= player.range) {
+              ad = d;
+              at = e;
+            }
+          });
+          if (at) {
+            const raw = Math.floor(
+              ri(player.atk - 4, player.atk + 8) * (playerRageMult || 1),
+            );
+            if (player.range > 100) {
+              fireProjectile(player, at, raw, 8, "#ffd700", "•");
+            } else {
+              dealDamage(at, raw, player);
+              spawnHitParticle(at.x, at.y, "#ffd700");
+            }
+            if (at.hp <= 0 && at.destroyed === undefined && !at.dead)
+              killEntity(at, player);
+            if (at.destroyed !== undefined && at.hp <= 0 && !at.destroyed)
+              killTower(at, false);
+            player.atkTimer = player.atkCD;
+          }
+        }
+      }
+
+      // Di akhir script, pastikan mobile controls diinisialisasi setelah DOM siap
+      document.addEventListener("DOMContentLoaded", function () {
+        // Inisialisasi mobile controls setelah semua elemen ada
+        setTimeout(() => {
+          initMobileControls();
+        }, 100);
+      });
     </script>
   </body>
 </html>
