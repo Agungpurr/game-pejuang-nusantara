@@ -8,6 +8,10 @@
       href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>"
+    />
     <style>
       * {
         box-sizing: border-box;
@@ -509,10 +513,11 @@
       }
 
       /* CHAR SELECT */
+      /* CHAR SELECT CONTAINER */
       #char-select {
         position: fixed;
         inset: 0;
-        background: radial-gradient(ellipse at 50% 40%, #1e3a1e, #0a0e0a);
+        background: radial-gradient(ellipse at 50% 40%, #1a3a1a, #0a120a);
         z-index: 200;
         display: flex;
         flex-direction: column;
@@ -521,104 +526,416 @@
         overflow-y: auto;
         padding: 20px;
       }
+
       .csel-title {
-        font-size: 14px;
+        font-size: 16px;
         color: var(--gold);
-        text-shadow: 0 0 16px rgba(245, 197, 24, 0.5);
-        margin-bottom: 4px;
+        text-shadow: 0 0 20px rgba(245, 197, 24, 0.6);
+        margin-bottom: 8px;
         text-align: center;
+        letter-spacing: 2px;
       }
+
       .csel-sub {
-        font-size: 6px;
-        color: #888;
-        margin-bottom: 16px;
+        font-size: 7px;
+        color: #aaa;
+        margin-bottom: 20px;
         text-align: center;
         line-height: 2;
+        background: rgba(0, 0, 0, 0.4);
+        padding: 8px 16px;
+        border-radius: 30px;
+        display: inline-block;
       }
+
       .csel-row {
         display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        justify-content: center;
-        max-width: 900px;
-      }
-      .cc {
-        width: 112px;
-        background: rgba(255, 255, 255, 0.03);
-        border: 2px solid #444;
-        padding: 10px 7px 28px;
-        cursor: pointer;
-        transition: all 0.15s;
-        text-align: center;
-        position: relative;
-      }
-      .cc:hover,
-      .cc.sel {
-        background: rgba(245, 197, 24, 0.1);
-        border-color: var(--gold);
-        transform: translateY(-3px);
-      }
-      .cc.sel::after {
-        content: "✓ PILIH";
-        font-size: 5px;
-        color: var(--green);
-        position: absolute;
-        bottom: 6px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(0, 0, 0, 0.5);
-        padding: 2px 6px;
-      }
-      .cc-sprite {
-        margin: 0 auto 6px;
-        display: block;
-      }
-      .cc-name {
-        font-size: 6px;
-        color: var(--gold);
-        margin-bottom: 2px;
-      }
-      .cc-role {
-        font-size: 5px;
-        color: var(--teal);
-        margin-bottom: 6px;
-      }
-      .cc-stat {
-        font-size: 5px;
-        color: #888;
-        line-height: 1.8;
-        text-align: left;
-      }
-      .cc-stat b {
-        color: var(--cream);
-      }
-      .stat-bar-w {
+        flex-wrap: nowrap; /* TIDAK wrap ke bawah */
+        gap: 16px;
+        padding: 10px;
+        overflow-x: auto; /* SCROLL ke samping */
+        overflow-y: hidden;
         width: 100%;
-        height: 4px;
-        background: #222;
-        border-radius: 1px;
-        margin: 1px 0 3px;
+        max-width: 100%;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
       }
-      .stat-bar-f {
-        height: 100%;
-        border-radius: 1px;
+
+      /* TAMBAHKAN - Scrollbar styling */
+      .csel-row::-webkit-scrollbar {
+        height: 6px;
       }
+      .csel-row::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 3px;
+      }
+      .csel-row::-webkit-scrollbar-thumb {
+        background: var(--gold);
+        border-radius: 3px;
+      }
+      .csel-row::-webkit-scrollbar-thumb:hover {
+        background: #fff;
+      }
+
+      #char-select {
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(ellipse at 50% 40%, #1a3a1a, #0a120a);
+        z-index: 200;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden; /* GANTI dari overflow-y: auto */
+        padding: 20px;
+      }
+
       .csel-go {
-        margin-top: 16px;
-        font-size: 9px;
-        padding: 11px 32px;
+        margin-top: 20px;
+        font-size: 10px;
+        padding: 12px 32px;
         border: 2px solid var(--green);
-        background: rgba(64, 192, 64, 0.1);
+        background: rgba(64, 192, 64, 0.15);
         color: var(--green);
         cursor: pointer;
         font-family: "Press Start 2P", monospace;
+        border-radius: 40px;
+        transition: all 0.2s ease;
       }
+
       .csel-go:disabled {
-        opacity: 0.3;
+        opacity: 0.4;
         cursor: not-allowed;
       }
+
       .csel-go:not(:disabled):hover {
-        background: rgba(64, 192, 64, 0.25);
+        background: rgba(64, 192, 64, 0.3);
+        transform: scale(1.02);
+        box-shadow: 0 0 15px rgba(64, 192, 64, 0.3);
+      }
+
+      /* CARD BASE - Diperbaiki */
+      .cc {
+        min-width: 260px; /* Lebar tetap */
+        width: 260px;
+        flex-shrink: 0; /* TIDAK menyusut */
+        scroll-snap-align: start;
+        background: linear-gradient(
+          135deg,
+          rgba(30, 30, 50, 0.95),
+          rgba(20, 20, 40, 0.95)
+        );
+        border: 2px solid #444;
+        padding: 12px 10px 16px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: center;
+        position: relative;
+        border-radius: 12px;
+        backdrop-filter: blur(2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      }
+      .cc:hover {
+        background: linear-gradient(
+          135deg,
+          rgba(50, 50, 80, 0.95),
+          rgba(30, 30, 60, 0.95)
+        );
+        border-color: var(--gold);
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      }
+      .cc.sel {
+        background: linear-gradient(
+          135deg,
+          rgba(245, 197, 24, 0.2),
+          rgba(245, 197, 24, 0.05)
+        );
+        border-color: var(--gold);
+        box-shadow: 0 0 15px rgba(245, 197, 24, 0.3);
+      }
+
+      /* SPRITE */
+      .cc-sprite {
+        margin: 0 auto 8px;
+        display: block;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 8px;
+        padding: 5px;
+      }
+
+      /* NAMA & ROLE */
+      .cc-name {
+        font-size: 9px;
+        color: var(--gold);
+        margin-bottom: 3px;
+        font-weight: bold;
+        letter-spacing: 1px;
+      }
+      .cc-role {
+        font-size: 6px;
+        color: var(--teal);
+        margin-bottom: 8px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        display: inline-block;
+        padding: 2px 8px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 20px;
+      }
+
+      /* STATISTIK - Diperbaiki */
+      .cc-stats {
+        margin-top: 8px;
+        padding: 8px;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .stat-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 7px;
+        margin-bottom: 6px;
+      }
+      .stat-row span {
+        width: 35px;
+        color: #aaa;
+        font-size: 7px;
+      }
+      .stat-row b {
+        width: 40px;
+        color: var(--gold);
+        font-size: 8px;
+      }
+      .stat-bar-w {
+        flex: 1;
+        height: 6px;
+        background: #2a2a2a;
+        border-radius: 3px;
+        overflow: hidden;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+      }
+      .stat-bar-f {
+        height: 100%;
+        border-radius: 3px;
+        transition: width 0.3s ease;
+      }
+
+      /* TAB CONTENT - Diperbaiki */
+      .tab-content {
+        margin-top: 12px;
+        padding: 10px;
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        display: none !important;
+
+        /* GANTI INI */
+        max-height: 100px;
+
+        overflow-y: scroll; /* GANTI dari auto ke scroll */
+        overflow-x: hidden;
+        overscroll-behavior: contain; /* TAMBAH - cegah scroll bocor ke parent */
+      }
+      .tab-content.active {
+        display: block !important;
+      }
+      .tab-header {
+        font-size: 8px;
+        color: var(--gold);
+        margin-bottom: 8px;
+        font-weight: bold;
+        text-align: center;
+        border-bottom: 1px solid rgba(245, 197, 24, 0.3);
+        padding-bottom: 5px;
+        letter-spacing: 1px;
+      }
+      .tab-text {
+        font-size: 6.5px;
+        color: #ddd;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        text-align: left;
+      }
+
+      /* BIOGRAFI */
+      .bio-text {
+        font-family: monospace;
+      }
+      .bio-text strong {
+        color: var(--teal);
+      }
+
+      /* STORY */
+      .story-text {
+        font-style: italic;
+        color: #ccc;
+        line-height: 1.7;
+      }
+
+      /* HEROIC TALE */
+      .heroic-header {
+        color: var(--orange);
+        border-bottom-color: rgba(255, 140, 0, 0.3);
+      }
+      .heroic-text {
+        font-size: 6.5px;
+        line-height: 1.7;
+        color: #f0e6c5;
+      }
+      .heroic-text::first-letter {
+        font-size: 12px;
+        color: var(--gold);
+        font-weight: bold;
+      }
+
+      /* SKILLS - Diperbaiki */
+      .skills-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .skill-preview {
+        background: rgba(0, 0, 0, 0.5);
+        padding: 8px;
+        border-radius: 6px;
+        border-left: 3px solid #555;
+        transition: all 0.2s ease;
+      }
+      .skill-preview:hover {
+        border-left-color: var(--gold);
+        background: rgba(0, 0, 0, 0.7);
+        transform: translateX(2px);
+      }
+      .skill-header-preview {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 6px;
+      }
+      .skill-icon-preview {
+        font-size: 16px;
+        min-width: 28px;
+        text-align: center;
+      }
+      .skill-name-preview {
+        font-size: 7.5px;
+        color: var(--cream);
+        font-weight: bold;
+      }
+      .skill-key-preview {
+        font-size: 5px;
+        color: var(--gold);
+        background: #222;
+        padding: 2px 5px;
+        border-radius: 4px;
+        font-family: monospace;
+      }
+      .skill-lock-info {
+        font-size: 4.5px;
+        color: #ff8888;
+        background: rgba(255, 68, 68, 0.2);
+        padding: 2px 5px;
+        border-radius: 4px;
+        margin-left: auto;
+      }
+      .skill-desc-preview {
+        font-size: 5.5px;
+        color: #bbb;
+        margin: 6px 0 6px 28px;
+        line-height: 1.45;
+      }
+      .skill-stats-preview {
+        display: flex;
+        gap: 12px;
+        margin-left: 28px;
+        font-size: 4.5px;
+        flex-wrap: wrap;
+      }
+      .skill-mp-preview {
+        color: #88aaff;
+      }
+      .skill-cd-preview {
+        color: #ffaa66;
+      }
+      .skill-dmg-preview {
+        color: #ff8888;
+      }
+      .skills-note {
+        font-size: 4.5px;
+        color: #888;
+        text-align: center;
+        margin-top: 10px;
+        padding-top: 8px;
+        border-top: 1px solid #333;
+      }
+
+      /* TAB BUTTONS - Diperbaiki */
+      .cc-tabs {
+        display: flex;
+        gap: 5px;
+        margin-top: 14px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .tab-btn {
+        font-family: "Press Start 2P", monospace;
+        font-size: 5px;
+        padding: 5px 8px;
+        background: rgba(0, 0, 0, 0.6);
+        border: 1px solid #555;
+        color: #aaa;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-radius: 20px;
+        letter-spacing: 0.5px;
+      }
+      .tab-btn:hover {
+        border-color: var(--gold);
+        color: var(--gold);
+        transform: translateY(-1px);
+      }
+      .tab-btn.active {
+        border-color: var(--gold);
+        color: var(--gold);
+        background: rgba(245, 197, 24, 0.15);
+        box-shadow: 0 0 8px rgba(245, 197, 24, 0.2);
+      }
+      .tab-btn[data-tab="heroic"].active {
+        border-color: var(--orange);
+        color: var(--orange);
+        background: rgba(255, 140, 0, 0.15);
+      }
+
+      /* SCROLLBAR */
+      .tab-content::-webkit-scrollbar {
+        width: 4px;
+      }
+      .tab-content::-webkit-scrollbar-track {
+        background: #1a1a2a;
+        border-radius: 4px;
+      }
+      .tab-content::-webkit-scrollbar-thumb {
+        background: var(--gold);
+        border-radius: 4px;
+      }
+      .cc-heroic::-webkit-scrollbar-thumb {
+        background: var(--orange);
+      }
+
+      /* ANIMATION */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
 
       /* GAME OVER */
@@ -649,6 +966,231 @@
         cursor: pointer;
         font-family: "Press Start 2P", monospace;
       }
+
+      /* MOBILE CONTROLS - Virtual Joystick & Buttons */
+      #mobile-controls {
+        position: fixed;
+        bottom: 20px;
+        left: 0;
+        right: 0;
+        z-index: 150;
+        pointer-events: none;
+        display: none;
+      }
+
+      #mobile-controls.show {
+        display: block;
+      }
+
+      /* Joystick Container */
+      .joystick-container {
+        position: fixed;
+        bottom: 80px;
+        left: 20px;
+        width: 120px;
+        height: 120px;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 60px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        pointer-events: auto;
+        touch-action: none;
+      }
+
+      .joystick-base {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 60px;
+        background: rgba(30, 30, 50, 0.6);
+      }
+
+      .joystick-thumb {
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        background: rgba(245, 197, 24, 0.8);
+        border-radius: 25px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 10px rgba(245, 197, 24, 0.5);
+        transition: transform 0.05s;
+      }
+
+      /* Skill Buttons Container */
+      .skill-buttons-mobile {
+        position: fixed;
+        bottom: 20px;
+        right: 10px;
+        display: flex;
+        gap: 12px;
+        pointer-events: auto;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        max-width: 200px;
+      }
+
+      .skill-btn-mobile {
+        width: 55px;
+        height: 55px;
+        background: linear-gradient(135deg, #2a2a4a, #1a1a3a);
+        border: 2px solid var(--gold);
+        border-radius: 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.1s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        pointer-events: auto;
+        z-index: 200;
+        touch-action: manipulation;
+      }
+
+      .skill-btn-mobile:active {
+        transform: scale(0.95);
+        background: linear-gradient(135deg, #3a3a6a, #2a2a5a);
+      }
+
+      .skill-btn-mobile.locked {
+        opacity: 0.4;
+        filter: grayscale(0.5);
+        border-color: #666;
+      }
+
+      .skill-btn-mobile .sk-icon-mobile {
+        font-size: 24px;
+      }
+
+      .skill-btn-mobile .sk-name-mobile {
+        font-size: 6px;
+        color: var(--cream);
+        margin-top: 2px;
+      }
+
+      .skill-btn-mobile .sk-cd-mobile {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        color: var(--gold);
+      }
+
+      /* Attack Button */
+      .attack-btn-mobile {
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, #e84040, #b83030);
+        border: 2px solid var(--gold);
+        border-radius: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        pointer-events: auto;
+        box-shadow: 0 4px 15px rgba(232, 64, 64, 0.4);
+        touch-action: manipulation;
+      }
+
+      .attack-btn-mobile:active {
+        transform: scale(0.95);
+      }
+
+      .attack-btn-mobile span {
+        font-size: 32px;
+      }
+
+      /* Shop Button Mobile */
+      .shop-btn-mobile {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        width: 45px;
+        height: 45px;
+        background: rgba(0, 0, 0, 0.6);
+        border: 2px solid var(--gold);
+        border-radius: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        pointer-events: auto;
+        z-index: 160;
+        font-size: 20px;
+      }
+
+      /* Mobile Orientation Warning */
+      #orientation-warning {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 1000;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+        font-family: "Press Start 2P", monospace;
+      }
+
+      #orientation-warning.show {
+        display: flex;
+      }
+
+      .orientation-icon {
+        font-size: 60px;
+        margin-bottom: 20px;
+        animation: rotate 1.5s ease-in-out infinite;
+      }
+
+      @keyframes rotate {
+        0%,
+        100% {
+          transform: rotate(0deg);
+        }
+        50% {
+          transform: rotate(90deg);
+        }
+      }
+
+      /* Mobile Responsive Adjustments */
+      @media (max-width: 768px) {
+        .csel-row {
+          gap: 12px;
+          padding: 8px;
+        }
+
+        .cc {
+          min-width: 240px;
+          width: 240px;
+        }
+
+        .tab-content {
+          max-height: 120px;
+        }
+
+        #ctrl-hint {
+          display: none;
+        }
+
+        #topbar .tb-seg {
+          font-size: 5px;
+          padding: 0 6px;
+        }
+
+        .hb-track {
+          width: 60px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -661,6 +1203,40 @@
         | 1/2/3/4/5=Skill | B=Shop | ESC=Logout
       </div>
       <div class="csel-row" id="csel-row"></div>
+      <div style="display: flex; gap: 12px; margin-top: 8px">
+        <button
+          id="scroll-left"
+          onclick="scrollCards(-1)"
+          style="
+            font-family: &quot;Press Start 2P&quot;, monospace;
+            font-size: 12px;
+            padding: 8px 20px;
+            border: 2px solid var(--gold);
+            background: rgba(245, 197, 24, 0.15);
+            color: var(--gold);
+            cursor: pointer;
+            border-radius: 20px;
+          "
+        >
+          ◀
+        </button>
+        <button
+          id="scroll-right"
+          onclick="scrollCards(1)"
+          style="
+            font-family: &quot;Press Start 2P&quot;, monospace;
+            font-size: 12px;
+            padding: 8px 20px;
+            border: 2px solid var(--gold);
+            background: rgba(245, 197, 24, 0.15);
+            color: var(--gold);
+            cursor: pointer;
+            border-radius: 20px;
+          "
+        >
+          ▶
+        </button>
+      </div>
       <button class="csel-go" id="csel-go" disabled onclick="startGame()">
         ▶ MULAI PERTEMPURAN
       </button>
@@ -826,6 +1402,29 @@
         id="got-msg"
       ></div>
       <button class="gob" onclick="location.reload()">↺ MAIN LAGI</button>
+    </div>
+
+    <!-- MOBILE CONTROLS -->
+    <div id="mobile-controls">
+      <div class="joystick-container" id="joystick-container">
+        <div class="joystick-base"></div>
+        <div class="joystick-thumb" id="joystick-thumb"></div>
+      </div>
+      <div class="skill-buttons-mobile" id="skill-buttons-mobile"></div>
+      <!-- <div class="attack-btn-mobile" id="attack-btn-mobile">
+        <span>⚔️</span>
+      </div> -->
+      <!-- <div class="shop-btn-mobile" id="shop-btn-mobile">🛒</div> -->
+    </div>
+
+    <div id="orientation-warning">
+      <div class="orientation-icon">📱➡️🔄</div>
+      <div style="font-size: 14px; margin-bottom: 10px">
+        PUTAR KE MODE LANDSCAPE
+      </div>
+      <div style="font-size: 10px; color: #aaa">
+        Untuk pengalaman bermain terbaik, putar ponsel Anda ke posisi horizontal
+      </div>
     </div>
 
     <script>
@@ -1810,6 +2409,13 @@
           atkRange: 50,
           atkCD: 0.7,
           stats: { atk: 80, def: 70, spd: 50, range: 30 },
+          weapon: "sword",
+          crown: false,
+          bio: "📜 BIOGRAFI: GADHANG WIJAYA\n\n🌍 ASAL: Desa Argosari, lereng Gunung Merapi, Jawa Tengah\n\n👤 NAMA LENGKAP: Raden Gadhang Wijaya Kusuma\n\n📖 LATAR BELAKANG:\nLahir dari keluarga ksatria yang telah turun-temurun menjaga keseimbangan alam. Sejak kecil, ia dilatih oleh eyangnya, seorang pendekar legendaris yang pernah berguru pada para dewa. Setiap hari ia ditempa di tepian kawah Merapi, mempelajari ilmu kebal dan kekuatan fisik.\n\n⚔️ PENJELMAAN:\nKonon, ia adalah titisan dari Batara Bayu, dewa angin. Kekuatannya yang luar biasa membuatnya mampu mengangkat batu seberat satu ton saat masih remaja.\n\n💪 KELEBIHAN:\nKekuatan fisik luar biasa, ketahanan tinggi, dan jiwa ksatria yang tak pernah padam.\n\n🎯 MOTTO HIDUP:\n'Sakti tanpa kesombongan, kuat tanpa keangkuhan, berani tanpa kebodohan.'",
+          story:
+            "Pejuang tangguh dengan kekuatan fisik luar biasa. Berasal dari pedalaman Jawa, ia ditempa dalam berbagai pertempuran. Setiap pukulannya mampu meruntuhkan benteng musuh. Ia adalah garda terdepan yang tak pernah mundur, membawa harapan bagi yang tertindas dan ketakutan bagi yang zalim.",
+          heroicTale:
+            "🏆 KISAH KEPAHLAWANAN: GADHANG WIJAYA\n\nDi puncak Gunung Merapi, Gadhang Wijaya ditempa oleh para dewa pejuang. Ia menyelamatkan desanya dari serangan raksasa dengan mematahkan tanduk sang raksasa menggunakan tangannya sendiri. Konon, setiap tetes keringatnya adalah api yang membakar semangat juang.\n\nIa pernah bertempur selama 7 hari 7 malam tanpa henti melawan pasukan siluman yang ingin menguasai tanah Jawa. Di hari ketujuh, ketika semua prajuritnya telah gugur, ia berdiri sendiri di atas bukit. Dengan tubuh penuh luka, ia meneriakkan nama leluhurnya dan melompat ke tengah ribuan siluman. Gempa bumi dahsyat terjadi, mengubur semua musuhnya.\n\nPara siluman yang tersisa menyerah karena kagum dengan kegigihannya. Mereka mengakui bahwa tidak ada manusia sekuat dirinya. Kini, ia berdiri sebagai pelindung Nusantara, siap menghancurkan segala ancaman yang datang.",
           skills: [
             {
               name: "TEBAS",
@@ -1900,6 +2506,11 @@
           atkRange: 260,
           atkCD: 0.9,
           stats: { atk: 70, def: 30, spd: 70, range: 90 },
+          bio: "📜 BIOGRAFI: JAKA TUMENGKUNG\n\n🌍 ASAL: Pedalaman Hutan Bukit Barisan, Sumatra Barat\n\n👤 NAMA LENGKAP: Jaka Tumenggung Satiyo Buwono\n\n📖 LATAR BELAKANG:\nPutra seorang pemburu ulung yang hidup menyendiri di hutan Sumatra. Sejak usia 5 tahun, ia sudah bisa memanah burung yang sedang terbang. Setiap hari ia berlatih hingga anak panahnya tak pernah meleset. Gurunya adalah alam sendiri — ia belajar ketepatan dari jatuhnya daun, kecepatan dari larinya rusa, dan kekuatan dari derasnya air terjun.\n\n🏹 PUSAKA:\nMemiliki busur 'Gandewa Pusaka' yang konon terbuat dari tulang naga dan tali dari urat naga terbang. Busur ini hanya bisa ditarik oleh mereka yang hatinya bersih dan niatnya suci.\n\n👁️ KELEBIHAN:\nKetajaman mata melebihi elang, mampu melihat jarak 5 kilometer. Pendengarannya juga luar biasa, bisa mendengar detak jantung musuh dari kejauhan.\n\n🎯 MOTTO HIDUP:\n'Satu anak panah, satu nyawa. Gunakan dengan bijak, karena hidup adalah anugerah.'",
+          story:
+            "Pemanah ulung dari Sumatra, Jaka Tumenggung memiliki ketepatan tembakan yang legendaris. Konon, ia bisa memanah jatuhnya daun sebelum menyentuh tanah, dan menembak jantung harimau dari jarak ratusan meter. Ia adalah bayangan di pepohonan, tak terlihat namun mematikan.",
+          heroicTale:
+            "🏆 KISAH KEPAHLAWANAN: JAKA TUMENGKUNG\n\nLegenda pemanah dari hutan Sumatra, Si Jaka Tumenggung konon dapat memanah daun yang jatuh dari ketinggian sebelum menyentuh tanah. Dalam pertempuran melawan naga berapi yang menghanguskan desa, ia memanah tepat di jantung sang naga dengan busur pusaka pemberian Batara Guru.\n\nKetika naga itu terbang tinggi dan menyemburkan api ke seluruh penjuru, Jaka memanjat pohon tertinggi. Ia menarik tali busurnya dengan seluruh kekuatan, membidik di antara sisik naga yang paling lemah. Satu anak panah melesat, menembus langit yang gelap, dan menusuk jantung naga. Sang naga jatuh dengan suara menggelegar, dan desa terselamatkan.\n\nTembakannya menembus tujuh lapis awan dan menjatuhkan burung garuda yang menculik putri raja. Hingga kini, jejak panahnya masih terlihat di batu-batu karang selat Bali, menjadi saksi bisu keperkasaannya.",
           skills: [
             {
               name: "PANAH",
@@ -1990,6 +2601,11 @@
           atkRange: 220,
           atkCD: 0.8,
           stats: { atk: 95, def: 20, spd: 55, range: 80 },
+          bio: "📜 BIOGRAFI: MBAH WREDA SAMBIROSO\n\n🌍 ASAL: Desa Kahyangan, pedalaman hutan Kalimantan\n\n👤 NAMA LENGKAP: Eyang Wreda Sambiroso bin Joyo Kusumo\n\n📖 LATAR BELAKANG:\nSeorang dukun sakti yang telah berusia lebih dari 200 tahun, namun tetap awet muda karena ilmu pengawetan jasad. Ia berguru pada roh-roh leluhur di hutan keramat selama 40 tahun tanpa henti. Konon, ia bisa berkomunikasi dengan semua makhluk halus di Nusantara.\n\n🔮 ILMU YANG DIKUASAI:\n- Ilmu Pengendali Cuaca (mampu memanggil hujan dan petir)\n- Ilmu Peramal (bisa melihat masa depan)\n- Ilmu Pelet dan Pengasihan\n- Ilmu Pengobatan Tradisional\n\n⚡ KELEBIHAN:\nKecerdasan spiritual luar biasa, mampu melihat makhluk gaib, dan memiliki pengetahuan tentang ramuan-ramuan kuno yang ampuh.\n\n🎯 MOTTO HIDUP:\n'Iklim alam adalah guru, batu dan pohon adalah kitab, dan hati adalah kunci untuk membacanya.'",
+          story:
+            "Dukun sakti dari Kalimantan, Mbah Wreda menguasai ilmu hitam dan putih. Ia belajar sihir dari para leluhur di hutan belantara. Kekuatan spiritualnya mampu memanggil petir dan mengutuk musuh dari kejauhan. Rambutnya yang putih panjang menyimpan ribuan mantra.",
+          heroicTale:
+            "🏆 KISAH KEPAHLAWANAN: MBAH WREDA SAMBIROSO\n\nMbah Wreda Sambiroso adalah dukun sakti dari pedalaman Kalimantan yang berguru pada roh-roh leluhur di hutan kahyangan. Ia pernah menghentikan banjir bandang dengan mantra pengendali air, menyelamatkan 7 desa dari amukan sungai.\n\nSuatu hari, sungai besar meluap akibat murka dewa. Air bah menghancurkan jembatan dan rumah-rumah. Mbah Wreda berdiri di tepi sungai, mengangkat tongkat pusakanya. Ia membaca mantra selama 3 hari 3 malam tanpa tidur. Pada malam ketiga, air mulai surut. Ia membelokkan aliran sungai ke jalur baru yang aman.\n\nDalam pertempuran melawan pasukan jin ifrit, ia memanggil badai petir yang menyambar-nyambar hingga 40 hari 40 malam. Kekuatannya berasal dari pusaka 'Tongkat Petir' yang hanya bisa digunakan oleh mereka yang hatinya suci. Ia mengorbankan separuh jiwanya untuk mengurung raja siluman di alam gaib selamanya.",
           skills: [
             {
               name: "SIHIR",
@@ -2080,6 +2696,11 @@
           atkRange: 48,
           atkCD: 0.3,
           stats: { atk: 85, def: 25, spd: 95, range: 25 },
+          bio: "📜 BIOGRAFI: NGURAH LANANG ANOM\n\n🌍 ASAL: Desa Bayung Gede, Kintamani, Bali\n\n👤 NAMA LENGKAP: I Ngurah Lanang Anom Dwijendra\n\n📖 LATAR BELAKANG:\nLahir saat gerhana bulan total, diyakini sebagai pertanda ia memiliki kemampuan gaib. Sejak kecil ia sudah bisa menghilang dan muncul di tempat lain. Ia berguru pada seorang pendeta sakti di Puncak Gunung Agung yang mengajarkan ilmu kanuragan tingkat tinggi.\n\n🗡️ SENJATA:\nKeris 'Maut Bersayap' — keris pusaka yang konon bisa terbang dan menikam musuh dari jarak jauh. Bilahnya tak terlihat oleh mata biasa karena selalu diselimuti bayangan.\n\n🌑 KELEBIHAN:\nBergerak tanpa suara, bisa menyatu dengan bayangan, dan memiliki kecepatan yang melampaui batas manusia biasa.\n\n🎯 MOTTO HIDUP:\n'Aku bukan siapa-siapa. Aku hanya bayangan yang membawa keadilan bagi yang tertindas.'",
+          story:
+            "Bayangan maut dari Bali, Ngurah Lanang Anom ahli dalam seni bela diri rahasia. Gerakannya tak terdeteksi, seperti hantu di tengah malam. Setiap tikaman belatinya membawa racun mematikan. Ia adalah pembunuh bayaran yang hanya membunuh para tiran.",
+          heroicTale:
+            "🏆 KISAH KEPAHLAWANAN: NGURAH LANANG ANOM\n\nDari Pulau Dewata, Ngurah Lanang Anom adalah bayangan yang ditakuti. Ia belajar ilmu kanuragan dari para pendeta di puncak Gunung Agung. Kisahnya dimulai ketika ia menyusup ke istana raja khianat yang menjual tanah air.\n\nDalam satu malam, ia melumpuhkan 1000 prajurit tanpa setetes darah pun tumpah, hanya dengan belati pusaka bernama 'Keris Maut'. Ia bergerak seperti angin, tak terdengar, tak terlihat. Satu per satu prajurit jatuh tertidur karena sentuhan kerisnya.\n\nRaja khianat itu terbangun dan menemukan seluruh pasukannya tertidur lelap. Di atas bantalnya terdapat sepucuk surat bertuliskan: 'Hidupmu kusimpan kali ini. Namun jika kau khianati tanah air lagi, bayangan akan kembali.'\n\nIa bisa menghilang di siang bolong dan muncul di bayangan musuh. Konon, hingga kini rohnya masih menjaga Pulau Dewata dari kejahatan yang mengintai.",
           skills: [
             {
               name: "TIKAM",
@@ -2103,21 +2724,11 @@
               dmg: [55, 78],
               desc: "Teleport & serang",
             },
-            {
-              name: "PISAU BERACUN",
-              icon: "🔪",
-              key: "3",
-              mp: 35,
-              cd: 14,
-              type: "poison_blades",
-              range: 120,
-              dmg: [25, 40],
-              desc: "10 pisau beracun mengelilingi 10 detik (poison & stun)",
-            },
+
             {
               name: "HANTU BAYANGAN",
               icon: "👥",
-              key: "4",
+              key: "3",
               mp: 45,
               cd: 18,
               type: "shadow_dance",
@@ -2127,10 +2738,11 @@
               // locked: true,
               // unlockLv: 6,
             },
+
             {
               name: "BAYANGAN",
               icon: "👥",
-              key: "5",
+              key: "4",
               mp: 30,
               cd: 12,
               type: "shadow_evade",
@@ -2153,6 +2765,17 @@
               // locked: true,
               // unlockLv: 8,
             },
+            {
+              name: "PISAU BERACUN",
+              icon: "🔪",
+              key: "6",
+              mp: 38,
+              cd: 25,
+              type: "poison_blades",
+              range: 120,
+              dmg: [25, 40],
+              desc: "10 pisau beracun mengelilingi 10 detik (poison & stun)",
+            },
           ],
         },
         {
@@ -2170,6 +2793,11 @@
           atkRange: 60,
           atkCD: 0.9,
           stats: { atk: 45, def: 95, spd: 30, range: 30 },
+          bio: "📜 BIOGRAFI: LEMBAGA TANGGUH\n\n🌍 ASAL: Desa Pangururan, pinggiran Danau Toba, Sumatra Utara\n\n👤 NAMA LENGKAP: Ompu Lembaga Tangguh Boru Sihotang\n\n📖 LATAR BELAKANG:\nDari suku Batak yang terkenal dengan kekeraskepalaannya, Lembaga adalah simbol keteguhan. Ia memiliki tubuh yang luar biasa kuat — konon ia adalah keturunan raksasa putih yang menjaga Danau Toba. Tubuhnya tak bisa ditembus senjata biasa.\n\n🛡️ PERISAI:\nMemiliki perisai 'Hodohon' yang terbuat dari kulit naga Batak. Perisai ini mampu menahan serangan apapun, bahkan sihir paling kuat sekalipun.\n\n💪 KELEBIHAN:\nDaya tahan fisik luar biasa, kekuatan super, dan kemampuan melindungi orang lain dengan mengorbankan dirinya sendiri.\n\n🎯 MOTTO HIDUP:\n'Sebagai benteng, aku akan berdiri kokoh. Selama aku masih di sini, tak ada yang bisa melukai saudaraku.'",
+          story:
+            "Benteng berjalan dari Sumatra, Lembaga Tangguh memiliki tubuh sekokoh karang. Ia adalah perisai bagi kawan-kawannya. Tak ada serangan yang mampu menggoyahkan pendiriannya. Ia pernah menahan lahar panas dengan tubuhnya sendiri.",
+          heroicTale:
+            "🏆 KISAH KEPAHLAWANAN: LEMBAGA TANGGUH\n\nLembaga Tangguh berasal dari tanah Batak, memiliki tubuh sekokoh batu karang. Ia pernah menjadi perisai hidup bagi rakyatnya saat gunung meletus, menahan lahar panas dengan tubuhnya sendiri hingga 3 hari 3 malam.\n\nSaat lahar mulai mengalir deras menuju desa, Lembaga berdiri di jalurnya. Tubuhnya membesar, menjadi seperti tembok raksasa. Lahar panas menyentuh kulitnya, tapi ia tak bergeming. Selama 3 hari ia bertahan, hingga aliran lahar berhenti dan desa terselamatkan.\n\nDalam perang melawan penjajah, ia berdiri di depan gerbang kerajaan, menahan seribu anak panah tanpa bergeming. Gada raksasanya mampu menghancurkan benteng musuh dalam sekali hantaman. Kini tubuhnya yang telah menjadi batu masih berdiri kokoh di Danau Toba, menjadi simbol ketangguhan sejati.",
           skills: [
             {
               name: "TEBAS",
@@ -2252,6 +2880,7 @@
           skin: "#c0907a",
           shirt: "#dd4488",
           hat: "#882244",
+          weapon: "flower",
           hp: 590,
           mp: 150,
           atk: 22,
@@ -2260,6 +2889,11 @@
           atkRange: 60,
           atkCD: 1.0,
           stats: { atk: 25, def: 45, spd: 60, range: 70 },
+          bio: "📜 BIOGRAFI: DEWI SARI AYU\n\n🌍 ASAL: Desa Wanayasa, kaki Gunung Ciremai, Jawa Barat\n\n👤 NAMA LENGKAP: Dewi Sari Ayu Kusumawati\n\n📖 LATAR BELAKANG:\nSeorang tabib cantik yang memilih hidup di tengah hutan untuk mempelajari khasiat tanaman. Ia mampu menyembuhkan penyakit yang dianggap tak tersembuhkan oleh tabib lain. Konon, ia mendapat ilmu dari seorang bidadari yang jatuh ke bumi.\n\n🌿 RAMUAN ANDALAN:\n- Jamu 'Mustika' (penyembuh luka luar)\n- Ramuan 'Saraswati' (penambah energi)\n- Racikan 'Wijaya Kusuma' (penawar racun)\n\n❤️ KELEBIHAN:\nKecerdasan dalam pengobatan, empati tinggi, dan kemampuan menenangkan hati yang gelisah.\n\n🎯 MOTTO HIDUP:\n'Tangan yang memberi obat lebih mulia dari tangan yang memegang senjata. Karena hidup adalah anugerah yang harus dijaga.'",
+          story:
+            "Tabib penyembuh dari Jawa Barat, Dewi Sari Ayu menguasai ilmu pengobatan tradisional. Setiap ramuan yang dibuatnya mampu menyembuhkan luka parah. Kehadirannya membawa harapan di tengah keputusasaan. Bunga di tangannya bisa menyembuhkan sekaligus menenangkan.",
+          heroicTale:
+            "🏆 KISAH KEPAHLAWANAN: DEWI SARI AYU\n\nDewi Sari Ayu adalah tabib dari tanah Jawa yang menyembuhkan tanpa pamrih. Ia mempelajari ilmu pengobatan dari 1000 tanaman langka di hutan Ujung Kulon. Kisah heroiknya terjadi saat wabah mematikan melanda 77 desa.\n\nWabah itu membunuh orang dalam hitungan jam. Tidak ada tabib yang berani mendekat. Namun Dewi Sari Ayu justru masuk ke desa yang paling parah. Ia merawat pasien tanpa takut tertular. Siang malam ia meracik obat dari embun pagi dan sinar bulan.\n\nIa berkeliling selama 1 tahun tanpa istirahat. Ia menyelamatkan ribuan nyawa, termasuk musuh yang terluka. Bunga di tangannya bisa menyembuhkan luka parah sekaligus menenangkan hati yang gundah. Hingga kini, di mana pun ia berada, selalu ada harapan baru yang tumbuh.",
           skills: [
             {
               name: "PUKUL",
@@ -2352,6 +2986,11 @@
           atkRange: 240,
           atkCD: 0.8,
           stats: { atk: 80, def: 35, spd: 60, range: 85 },
+          bio: "📜 BIOGRAFI: LORD BAHLIL\n\n🌍 ASAL: Kota Dumai, pesisir timur Sumatra\n\n👤 NAMA LENGKAP: Haji Bahlil bin Abdul Malik\n\n📖 LATAR BELAKANG:\nSeorang saudagar minyak kaya raya yang kehilangan segalanya saat desanya dihancurkan oleh pasukan kegelapan. Dari kehancuran itu, ia bangkit dengan tekad membara. Ia menggabungkan ilmu dagangnya dengan sihir api yang dipelajari dari dukun-dukun di pedalaman.\n\n🛢️ KEKUATAN:\nMenguasai elemen minyak dan api. Ia bisa menciptakan ledakan dahsyat dari tetes minyak sekecil apapun. Setiap serangannya meninggalkan jejak api yang membakar musuh perlahan.\n\n💰 KELEBIHAN:\nKecerdasan strategis luar biasa, kekayaan tak terbatas untuk membiayai perlawanan, dan semangat pantang menyerah.\n\n🎯 MOTTO HIDUP:\n'Api dendamku membara seperti minyak yang terbakar. Aku akan membalas semua yang merenggut tanah kelahiranku!'",
+          story:
+            "Lord Bahlil adalah penguasa ladang minyak yang berubah menjadi pejuang setelah desanya dihancurkan. Ia menggabungkan ilmu dagang dengan sihir api, menciptakan senjata dari minyak tanah yang bisa membakar seluruh pasukan musuh. Apinya menjadi simbol pembalasan dendam yang membara.",
+          heroicTale:
+            "🏆 KISAH KEPAHLAWANAN: LORD BAHLIL\n\nLord Bahlil adalah penguasa ladang minyak yang berubah menjadi pejuang setelah desanya dihancurkan. Awalnya ia hanyalah saudagar kaya, namun ketika pasukan kegelapan merampok tanah kelahirannya, ia menggabungkan ilmu dagang dengan sihir api.\n\nIa menciptakan senjata dari minyak tanah yang bisa membakar seluruh pasukan musuh. Dalam pertempuran terbesarnya, ia menyiramkan minyak ke seluruh lembah dan membakarnya, menjebak ribuan pasukan iblis dalam lautan api.\n\nMalam itu, desanya diserang oleh pasukan iblis. Dengan tangki minyak yang dikumpulkannya, ia menuangkan minyak ke sekeliling desa. Ketika iblis masuk, ia melemparkan obor. Api menyala membentuk lingkaran, menjebak musuh. Ia berdiri di tengah api, tertawa keras. Semua iblis terbakar habis.\n\nKini ia menggunakan kekayaannya untuk membiayai perlawanan, dan apinya menjadi simbol pembalasan dendam yang membara.",
           skills: [
             {
               name: "BOLA MINYAK",
@@ -2420,7 +3059,7 @@
         {
           id: "yudhisthira",
           name: "YUDHISTHIRA",
-          role: "Commander",
+          role: "Fighter",
           skin: "#e8b87a",
           shirt: "#d4af37",
           hat: "#b8860b",
@@ -2434,6 +3073,11 @@
           atkRange: 55,
           atkCD: 0.8,
           stats: { atk: 60, def: 75, spd: 45, range: 40 },
+          bio: "📜 BIOGRAFI: YUDHISTHIRA\n\n🌍 ASAL: Kerajaan Hastinapura, India kuno (versi pewayangan Jawa)\n\n👤 NAMA LAIN: Dharmaraja, Dharmawangsa, Puntadewa\n\n📖 LATAR BELAKANG:\nPutra tertua pasangan Pandu Dewanata dan Dewi Kunti. Ia adalah simbol kebenaran dan keadilan. Sejak lahir, ia sudah memiliki watak yang jujur, sabar, dan bijaksana. Ia memerintah kerajaan dengan hati yang bersih dan tanpa pamrih.\n\n👑 KEISTIMEWAAN:\n- Tidak pernah berbohong seumur hidupnya\n- Mampu memaafkan musuh yang menyesal\n- Bijaksana dalam mengambil keputusan\n- Selalu mengutamakan kepentingan rakyat\n\n⚖️ PUSAKA:\nTongkat kerajaan 'Kalimasada' yang konon bisa menghancurkan kejahatan hanya dengan sentuhannya.\n\n🎯 MOTTO HIDUP:\n'Kebenaran adalah senjata paling ampuh. Kebohongan akan runtuh dengan sendirinya.'",
+          story:
+            "Yudhisthira adalah raja adil yang lebih memilih kehilangan tahta daripada kebenaran. Dalam perang Bharatayuddha, ia memimpin pasukan dengan strategi yang tak pernah mengorbankan rakyat kecil. Ia dikenal sebagai 'Dharmaraja' — raja yang hidup untuk kebenaran.",
+          heroicTale:
+            "🏆 KISAH KEPAHLAWANAN: YUDHISTHIRA\n\nYudhisthira, putra tertua Pandu, adalah raja yang lebih memilih kehilangan tahta daripada kebenaran. Kisah heroiknya bukan dari kekuatan fisik, tapi dari keteguhan hati. Dalam perang Bharatayuddha, ia memimpin pasukan dengan strategi yang tak pernah mengorbankan rakyat kecil.\n\nIa rela menjalani masa pembuangan 13 tahun demi menegakkan dharma. Ketika ditawari kembali tahta dengan syarat mengkhianati saudara, ia menolak tanpa ragu. Tongkat kerajaannya bukanlah senjata pembunuh, tapi simbol keadilan yang menerangi kegelapan.\n\nSaat perang saudara tak terhindarkan, ia tetap memaafkan sepupunya yang durhaka. Bahkan ketika Duryodhana mencaci maki di hadapannya, Yudhisthira hanya tersenyum dan berkata: 'Aku memaafkanmu, karena kebencian hanya akan melahirkan kebencian.'\n\nHingga akhir hayatnya, ia dikenal sebagai 'Dharmaraja' — raja yang hidup untuk kebenaran. Kini ia memimpin pasukan cahaya melawan kegelapan.",
           skills: [
             {
               name: "KERAJAAN",
@@ -2499,7 +3143,7 @@
         {
           id: "bima",
           name: "BIMA",
-          role: "Warrior",
+          role: "Tank/fighter",
           skin: "#c06a3a",
           shirt: "#a0522d",
           hat: "#8b4513",
@@ -2513,6 +3157,11 @@
           atkRange: 45,
           atkCD: 0.9,
           stats: { atk: 85, def: 90, spd: 55, range: 20 },
+          bio: "📜 BIOGRAFI: BIMA\n\n🌍 ASAL: Kerajaan Hastinapura, India kuno (versi pewayangan Jawa)\n\n👤 NAMA LAIN: Werkudara, Bratasena, Bayusuta\n\n📖 LATAR BELAKANG:\nPutra kedua Pandu yang lahir dari doa Batara Bayu (dewa angin). Ia adalah ksatria dengan kekuatan superhuman yang tak tertandingi. Tubuhnya kekar dan tinggi besar, dengan suara yang menggelegar seperti guntur.\n\n💪 KEISTIMEWAAN:\n- Kekuatan fisik paling kuat di antara para ksatria\n- Mampu memakan apapun tanpa sakit perut\n- Tubuhnya kebal senjata biasa\n- Memiliki kuku sakti 'Pancanaka'\n\n🔨 PUSAKA:\nGada 'Rujakpala' yang mampu menghancurkan gunung dan 'Kuku Pancanaka' yang bisa merobek apapun.\n\n🎯 MOTTO HIDUP:\n'Jangan pernah mundur dari kebenaran. Lebih baik mati berani daripada hidup pengecut.'",
+          story:
+            "Bima adalah ksatria dengan kekuatan superhuman yang lahir dari doa Batara Bayu. Dalam perjalanannya mencari air suci, ia bertarung dengan para raksasa dan memakannya hidup-hidup. Ia tak pernah mundur setapak pun, karena baginya mundur adalah aib terbesar seorang ksatria.",
+          heroicTale:
+            "🏆 KISAH KEPAHLAWANAN: BIMA\n\nBima, putra kedua Pandu, adalah ksatria dengan kekuatan superhuman yang lahir dari doa Batara Bayu. Kisah heroiknya dimulai saat ia masih bayi — ketika jatuh dari gendongan ke jurang, bukannya terluka, ia justru menghancurkan batu-batu di bawahnya.\n\nDalam perjalanannya mencari air suci untuk ibunya, ia bertarung dengan para raksasa dan memakan mereka hidup-hidup. Gada 'Rujakpala' pemberian gurunya mampu menghancurkan gunung dalam sekali pukul.\n\nKonon, saat ia marah, tubuhnya membesar hingga setinggi langit dan suaranya menggelegar seperti guntur. Ia tak pernah mundur setapak pun dari pertempuran, karena baginya, mundur adalah aib terbesar seorang ksatria.\n\nDi medan perang Kurukshetra, ia membantai 100 kerabatnya sendiri demi kebenaran. Namun di balik kekejamannya, ia adalah ksatria paling setia dan paling mencintai keluarganya.",
           skills: [
             {
               name: "PAKU",
@@ -2592,6 +3241,11 @@
           atkRange: 300,
           atkCD: 0.7,
           stats: { atk: 90, def: 35, spd: 85, range: 95 },
+          bio: "📜 BIOGRAFI: ARJUNA\n\n🌍 ASAL: Kerajaan Hastinapura, India kuno (versi pewayangan Jawa)\n\n👤 NAMA LAIN: Janaka, Permadi, Dananjaya\n\n📖 LATAR BELAKANG:\nPutra ketiga Pandu, ksatria paling tampan dan paling disegani. Ia adalah pemanah terhebat di dunia, yang kemampuannya diakui oleh para dewa. Ia berguru pada Resi Drona, guru para ksatria.\n\n🏹 KEISTIMEWAAN:\n- Pemanah terbaik sepanjang masa\n- Memiliki 1000 senjata dewa\n- Dapat berkendara di awan\n- Dikagumi oleh banyak putri raja\n\n🏹 PUSAKA:\nBusur 'Gandiva' yang tak bisa ditarik oleh ksatria biasa dan panah 'Pasupati' pemberian Dewa Siwa.\n\n🎯 MOTTO HIDUP:\n'Kesempurnaan bukan tentang tidak pernah gagal, tapi tentang bangkit setiap kali jatuh.'",
+          story:
+            "Arjuna adalah pemanah terhebat dengan busur Gandiva pemberian dewa. Dalam tapanya di Gunung Indrakila, ia mendapatkan panah Pasupati setelah membuktikan keteguhan hati. Ia menolak bertempur melawan saudara, namun akhirnya menerima takdir sebagai prajurit kebenaran.",
+          heroicTale:
+            "🏆 KISAH KEPAHLAWANAN: ARJUNA\n\nArjuna, putra ketiga Pandu, adalah pemanah yang ketenarannya terdengar hingga kahyangan. Dalam tapanya di Gunung Indrakila, ia mendapatkan panah Pasupati dari Dewa Siwa setelah membuktikan keteguhan hatinya.\n\nKisah heroiknya terjadi saat ia membunuh ribuan pasukan Kurawa hanya dalam sehari menggunakan senjata dewa. Kemampuan memanahnya sedemikian rupa sehingga ia bisa menembak sasaran hanya dengan mendengar suara — seperti kisah jatuhnya burung di atas pohon.\n\nDalam perang besar, busur Gandiwanya adalah pemusnah massal yang membuat musuh gemetar. Tapi di balik itu, Arjuna adalah ksatria yang selalu meragu, yang justru membuatnya manusiawi. Ia menolak bertempur melawan saudara dan guru-gurunya, namun akhirnya menerima takdirnya sebagai prajurit kebenaran.\n\nAtas keraguannya, Krisna memberinya wejangan yang menjadi kitab Bhagavad Gita — pelajaran tentang dharma, kehidupan, dan kematian.",
           skills: [
             {
               name: "PANAH",
@@ -2657,7 +3311,7 @@
         {
           id: "nakula",
           name: "NAKULA",
-          role: "Assassin",
+          role: "Assassin/Mage",
           skin: "#c88a5a",
           shirt: "#4a6e8a",
           hat: "#2c3e50",
@@ -2671,6 +3325,11 @@
           atkRange: 45,
           atkCD: 0.25,
           stats: { atk: 88, def: 30, spd: 98, range: 20 },
+          bio: "📜 BIOGRAFI: NAKULA\n\n🌍 ASAL: Kerajaan Hastinapura, India kuno (versi pewayangan Jawa)\n\n👤 NAMA LAIN: Nakula Sadewa (bersama saudara kembarnya)\n\n📖 LATAR BELAKANG:\nPutra keempat Pandu, lahir bersama saudara kembarnya Sadewa dari pasangan Dewi Madrim dan para Aswin (dewa pengobatan). Ia dikenal sebagai ksatria tercantik dengan paras yang mempesona.\n\n🗡️ KEISTIMEWAAN:\n- Kecepatan luar biasa, tak terlihat mata\n- Ahli ilmu pedang dan tipu muslihat\n- Wajah paling tampan di antara para ksatria\n- Pandai dalam ilmu pemerintahan\n\n⚔️ PUSAKA:\nPedang 'Kembang Sungsang' yang konon bisa membelah angin.\n\n🎯 MOTTO HIDUP:\n'Kecantikan tanpa keberanian hanyalah hiasan. Aku membuktikan bahwa yang tampan juga bisa mematikan.'",
+          story:
+            "Nakula adalah ksatria tercantik dengan kecepatan kilat. Ilmu beladiri 'Bayangan Maut' membuatnya bisa berada di mana saja dalam sekejap. Pedangnya 'Kembang Sungsang' konon tidak pernah basah oleh darah karena setiap tikamannya begitu cepat.",
+          heroicTale:
+            "🏆 KISAH KEPAHLAWANAN: NAKULA\n\nNakula, putra keempat Pandu, adalah ksatria tercantik dan tercepat di jagat. Lahir bersama saudara kembarnya Sadewa, mereka adalah anugerah dari para Aswin (dewa pengobatan). Kisah heroik Nakula adalah ketika ia menyusup ke istana musuh sendirian, membebaskan 1000 tawanan tanpa diketahui siapa pun.\n\nDalam kegelapan malam, ia bergerak seperti angin. Satu per satu penjaga jatuh tertidur karena sentuhan pedangnya. Ia membuka semua pintu penjara tanpa ada yang menyadari kehadirannya. Saat fajar tiba, semua tawanan telah bebas, dan Nakula sudah kembali ke perkemahan.\n\nIlmu beladiri 'Bayangan Maut' membuatnya bisa berada di mana saja dalam sekejap. Dalam perang Bharatayuddha, ia bertanggung jawab menjaga sayap kiri pasukan dan membasmi panglima musuh satu per satu dengan kecepatan kilat. Pedangnya yang bernama 'Kembang Sungsang' konon tidak pernah basah oleh darah karena setiap tikamannya begitu cepat hingga darah tak sempat menetes.",
           skills: [
             {
               name: "TIKAM",
@@ -2736,11 +3395,11 @@
         {
           id: "sadewa",
           name: "SADEWA",
-          role: "Support",
+          role: "Figter/support",
           skin: "#c88a5a",
           shirt: "#6a9e4a",
           hat: "#3a6e2a",
-          weapon: "flower",
+          weapon: "sword",
           crown: true,
           hp: 610,
           mp: 140,
@@ -2750,32 +3409,37 @@
           atkRange: 55,
           atkCD: 0.9,
           stats: { atk: 35, def: 50, spd: 65, range: 65 },
+          bio: "📜 BIOGRAFI: SADEWA\n\n🌍 ASAL: Kerajaan Hastinapura, India kuno (versi pewayangan Jawa)\n\n👤 NAMA LAIN: Sadewa, saudara kembar Nakula\n\n📖 LATAR BELAKANG:\nPutra bungsu Pandu, lahir bersama Nakula dari pasangan Dewi Madrim dan para Aswin (dewa pengobatan). Meskipun lahir dari dewa pengobatan, Sadewa memilih jalan ksatria. Ia adalah ahli astrologi, menteri keuangan kerajaan, dan pendekar pedang yang handal.\n\n🌿 WARISAN DEWA ASWIN:\nSebagai putra dewa pengobatan, Sadewa mewarisi sedikit pengetahuan tentang ramuan herbal. Meskipun ia lebih memilih pedang daripada ramuan, ia tetap membawa jamu kerajaan di ikat pinggangnya — untuk berjaga-jaga jika ada kawan yang terluka di medan perang.\n\n⚔️ FIGHTER SUPPORT:\nDi garis depan, Sadewa adalah ksatria yang tangguh dengan pedang di tangan. Namun di sela-sela pertempuran, ia juga memberikan ramuan penyembuh kepada sekutu yang terluka. Ia membuktikan bahwa seorang pejuang sejati tidak hanya kuat, tapi juga peduli pada kawan-kawannya.\n\n🗡️ PUSAKA:\nPedang pusaka 'Kembang Sungsang' (berbagi dengan Nakula) dan ramuan herbal 'Amerta Sadewa' yang ia bawa dari Hastinapura.\n\n🎯 MOTTO HIDUP:\n'Aku bertarung dengan pedang di tangan kanan, dan membawa kesembuhan di tangan kiri. Karena ksatria sejati tidak hanya menyerang, tapi juga melindungi.'",
+          story:
+            "Sadewa adalah ksatria pedang handal dari Hastinapura yang juga mewarisi sedikit ilmu pengobatan dari orang tuanya, Dewa Aswin. Bersama saudara kembarnya Nakula, mereka adalah pendekar pedang tercepat. Di medan perang, ia tidak hanya bertarung, tapi juga membaca pergerakan bintang untuk memberikan keuntungan taktis, serta membagikan ramuan herbal kepada sekutu yang terluka.",
+          heroicTale:
+            "🏆 KISAH KEPAHLAWANAN: SADEWA SANG PEDANG PENYEMBUH\n\nSadewa, putra bungsu Pandu, adalah ksatria yang unik. Di tangan kanannya ia memegang pedang mematikan, di tangan kirinya ia membawa ramuan penyembuh. Warisan dari orang tuanya, Dewa Aswin, membuatnya memiliki pengetahuan tentang herbal, meskipun ia lebih memilih menjadi ksatria daripada tabib.\n\n⚔️ PERTEMPURAN DI KURUKSHETRA:\nDalam perang besar Bharatayuddha, Sadewa bertugas di sayap kanan pasukan Pandawa. Bersama Nakula, mereka menjadi benteng pertahanan yang kokoh. Namun yang membedakan Sadewa dari ksatria lain adalah perhatiannya pada kawan-kawan yang terluka.\n\n🌿 RAMUAN DI TENGAH PERANG:\nKetika pasukan Pandawa mulai kelelahan dan terluka, Sadewa tidak ragu membagikan ramuan herbal yang ia bawa. Ia menyelip di antara tebasan pedangnya, melemparkan jamu ke kawan-kawan yang membutuhkan. Seorang panglima yang hampir tewas karena luka parah berhasil selamat berkat ramuan dari Sadewa.\n\n📜 STRATEGI FLANKING:\nDalam pertempuran melawan pasukan Kurawa yang mengepung, Sadewa menunjukkan keberaniannya. Dengan pedang terhunus, ia menerobos barisan musuh, membuka celah bagi pasukannya. Di sela-sela itu, ia masih sempat melemparkan ramuan ke Nakula yang terluka di bahu.\n\n🏇 KERETA KENCANA:\nPuncak kepahlawanan Sadewa terjadi saat ia memimpin serangan kavaleri. Dengan kereta perang yang ia rawat sendiri, ia menerjang barisan musuh. Di tengah pertempuran, ia melihat sekutunya terjatuh. Tanpa ragu, ia melompat dari kereta, memberikan ramuan penyembuh, lalu kembali bertarung dengan pedang.\n\n⭐ WARISAN:\nHingga kini, Sadewa dikenang sebagai ksatria yang tidak hanya kuat, tapi juga peduli. Ia membuktikan bahwa seorang pejuang sejati bisa menjadi fighter yang tangguh sekaligus support yang melindungi kawan-kawannya.",
           skills: [
             {
-              name: "TAMAN",
-              icon: "🌿",
+              name: "TUSUKAN KERIS",
+              icon: "🗡️",
               key: "1",
               mp: 0,
-              cd: 0.6,
+              cd: 0.45,
               type: "melee",
-              range: 60,
-              dmg: [22, 35],
-              desc: "Serangan herbal",
+              range: 65,
+              dmg: [32, 48],
+              desc: "Serangan keris cepat",
             },
             {
-              name: "OBAT",
-              icon: "🧪",
+              name: "STRATEGI FLANKING",
+              icon: "🎯",
               key: "2",
-              mp: 20,
-              cd: 4,
-              type: "heal",
-              range: 0,
-              dmg: [60, 90],
-              desc: "Sembuhkan diri",
+              mp: 10,
+              cd: 1.5,
+              type: "teleport",
+              range: 250,
+              dmg: [50, 75],
+              desc: "Teleport & serang",
             },
             {
               name: "BERKAT",
-              icon: "✨",
+              icon: "🌿",
               key: "3",
               mp: 25,
               cd: 6,
@@ -2785,8 +3449,8 @@
               desc: "Sembuhkan area",
             },
             {
-              name: "PENAWAR",
-              icon: "🌸",
+              name: "RAMALAN BINTANG",
+              icon: "⭐",
               key: "4",
               mp: 40,
               cd: 12,
@@ -2794,8 +3458,8 @@
               range: 130,
               dmg: [0, 0],
               desc: "Hilangkan debuff ally (Lv5)",
-              locked: true,
-              unlockLv: 4,
+              // locked: true,
+              // unlockLv: 4,
             },
             {
               name: "KEABADIAN",
@@ -2807,8 +3471,21 @@
               range: 150,
               dmg: [0, 0],
               desc: "Regen HP 20/s 8 detik (Lv9)",
-              locked: true,
-              unlockLv: 8,
+              // locked: true,
+              // unlockLv: 8,
+            },
+            {
+              name: "KERETA KENCANA",
+              icon: "🏇",
+              key: "6",
+              mp: 55,
+              cd: 28,
+              type: "charge",
+              range: 400,
+              dmg: [80, 115],
+              desc: "Charge kereta, damage musuh, shield 120 & heal 40 ke ally (Lv8)",
+              // locked: true,
+              // unlockLv: 8,
             },
           ],
         },
@@ -3024,8 +3701,8 @@
         vehicles = [],
         animals = [],
         traps = [];
-      let playerBase = { x: 96, y: MAP_H / 2, hp: 1000, maxHp: 1000 };
-      let enemyBase = { x: MAP_W - 96, y: MAP_H / 2, hp: 1000, maxHp: 1000 };
+      let playerBase = { x: 96, y: MAP_H / 2, hp: 10000, maxHp: 10000 };
+      let enemyBase = { x: MAP_W - 96, y: MAP_H / 2, hp: 10000, maxHp: 10000 };
       let projectiles = [],
         particles = [],
         damageNums = [],
@@ -3076,11 +3753,14 @@
       let angelInterval = null;
       let angelBuffActive = false;
       let angelBuffTimer = 0;
+      let currentMapTheme = "normal"; // normal, lava, meteo, space
+      let mapThemeCycle = ["normal", "lava", "meteo", "space"];
+      let meteorTimer = 0; // Timer untuk hujan meteor (mode meteo)
       // Di bagian GAME STATE, tambahkan:
       let bossSpawnTimer = 0;
       let currentBoss = null; // Untuk menyimpan lord yang sedang aktif
       let currentAllyLord = null; // Untuk menyimpan lord ally
-      let lordSpawnTimer = 120; // 2 menit dalam detik
+      let lordSpawnTimer = 480; // 2 menit dalam detik
       let oilSpills = [];
       const TMAP = [];
 
@@ -3139,19 +3819,118 @@
       }
 
       function tileColor(t) {
-        if (isNightMode) {
-          // Mode malam - warna lebih gelap
-          if (t === 1) return ["#4a5a3a", "#3a4a2a"]; // Path lebih gelap
-          if (t === 2) return ["#1a2a1a", "#0e1a0e"]; // Pepohonan lebih gelap
-          if (t === 3) return ["#1a4a7a", "#0a3a6a"]; // Air lebih gelap
-          return ["#2a5a2a", "#1e4a1e"]; // Rumput lebih gelap
-        } else {
-          // Mode siang (normal)
-          if (t === 1) return ["#c8a070", "#b89060"];
-          if (t === 2) return ["#2a4a1a", "#1e3812"];
-          if (t === 3) return ["#3a80d9", "#2a70c9"];
-          return ["#5a9e3a", "#4e8c30"];
+        // Pilih warna dasar berdasarkan THEME (bukan mode malam)
+        let baseColor1, baseColor2;
+
+        switch (currentMapTheme) {
+          case "lava":
+            if (t === 0) {
+              baseColor1 = "#b85a1a";
+              baseColor2 = "#a84a0a";
+            } // Rumput jadi merah-oranye
+            else if (t === 1) {
+              baseColor1 = "#e86a2a";
+              baseColor2 = "#d85a1a";
+            } // Path jadi lava
+            else if (t === 2) {
+              baseColor1 = "#5a3a1a";
+              baseColor2 = "#4a2a0a";
+            } // Hutan jadi abu
+            else if (t === 3) {
+              baseColor1 = "#d87a3a";
+              baseColor2 = "#c86a2a";
+            } // Air jadi lava cair
+            else {
+              baseColor1 = "#c86a2a";
+              baseColor2 = "#b85a1a";
+            }
+            break;
+
+          case "meteo":
+            if (t === 0) {
+              baseColor1 = "#4a4a6a";
+              baseColor2 = "#3a3a5a";
+            } // Ungu kebiruan
+            else if (t === 1) {
+              baseColor1 = "#6a6a8a";
+              baseColor2 = "#5a5a7a";
+            } // Path abu-abu kebiruan
+            else if (t === 2) {
+              baseColor1 = "#2a2a4a";
+              baseColor2 = "#1a1a3a";
+            } // Hutan gelap
+            else if (t === 3) {
+              baseColor1 = "#7a7aaa";
+              baseColor2 = "#6a6a9a";
+            } // Air seperti kristal
+            else {
+              baseColor1 = "#5a5a7a";
+              baseColor2 = "#4a4a6a";
+            }
+            break;
+
+          case "space":
+            if (t === 0) {
+              baseColor1 = "#1a1a3a";
+              baseColor2 = "#0a0a2a";
+            } // Hitam kebiruan
+            else if (t === 1) {
+              baseColor1 = "#2a2a5a";
+              baseColor2 = "#1a1a4a";
+            } // Path gelap dengan bintang
+            else if (t === 2) {
+              baseColor1 = "#0a0a2a";
+              baseColor2 = "#05051a";
+            } // Hutan sangat gelap
+            else if (t === 3) {
+              baseColor1 = "#3a3a8a";
+              baseColor2 = "#2a2a7a";
+            } // Air seperti nebula
+            else {
+              baseColor1 = "#2a2a4a";
+              baseColor2 = "#1a1a3a";
+            }
+            break;
+
+          default: // normal
+            if (t === 1) {
+              baseColor1 = "#c8a070";
+              baseColor2 = "#b89060";
+            } else if (t === 2) {
+              baseColor1 = "#2a4a1a";
+              baseColor2 = "#1e3812";
+            } else if (t === 3) {
+              baseColor1 = "#3a80d9";
+              baseColor2 = "#2a70c9";
+            } else {
+              baseColor1 = "#5a9e3a";
+              baseColor2 = "#4e8c30";
+            }
         }
+
+        // APLIKASIKAN MODE MALAM (overlay gelap)
+        if (isNightMode) {
+          // Gelapkan warna theme
+          const darken = (color) => {
+            // Fungsi sederhana untuk menggelapkan warna
+            if (color === "#c8a070") return "#6a5a3a";
+            if (color === "#b89060") return "#5a4a2a";
+            if (color === "#2a4a1a") return "#1a2a0a";
+            if (color === "#1e3812") return "#0e1a0a";
+            if (color === "#3a80d9") return "#1a4a7a";
+            if (color === "#2a70c9") return "#0a3a6a";
+            if (color === "#5a9e3a") return "#2a5a2a";
+            if (color === "#4e8c30") return "#1e4a1e";
+            // Untuk warna theme lava, meteo, space
+            return color.replace(/[0-9a-f]{2}/gi, (c) => {
+              const val = Math.max(0, parseInt(c, 16) - 40);
+              return val.toString(16).padStart(2, "0");
+            });
+          };
+          return [darken(baseColor1), darken(baseColor2)];
+        }
+
+        return [baseColor1, baseColor2];
       }
 
       function drawWall(ctx, x, y, hp, maxHp, duration) {
@@ -3782,6 +4561,49 @@
         ctx.restore();
       }
 
+      // Fungsi untuk mengubah theme map berdasarkan stage
+      function updateMapThemeByStage(stageNum) {
+        // Siklus: Stage 1: normal, Stage 2: lava, Stage 3: meteo, Stage 4: space, Stage 5: normal, dst
+        const themeIndex = (stageNum - 1) % 4;
+        currentMapTheme = mapThemeCycle[themeIndex];
+
+        console.log(
+          `🌍 Stage ${stageNum} - Theme: ${currentMapTheme.toUpperCase()}`,
+        );
+
+        // Tambahkan notifikasi ke killfeed
+        let themeMessage = "";
+        let themeColor = "";
+        switch (currentMapTheme) {
+          case "lava":
+            themeMessage = "🌋 THEME LAVA! Tanah membara! 🔥";
+            themeColor = "#ff8844";
+            break;
+          case "meteo":
+            themeMessage = "☄️ THEME METEOR! Hujan meteor setiap 20 detik! 💥";
+            themeColor = "#aa66ff";
+            break;
+          case "space":
+            themeMessage =
+              "🚀 THEME SPACE! Gravitasi rendah! Kecepatan semua unit +30%! 🌌";
+            themeColor = "#88aaff";
+            break;
+          default:
+            themeMessage = "🌿 THEME NORMAL! Kembali ke alam asli! 🍃";
+            themeColor = "#88ff88";
+        }
+
+        addKillFeed(themeMessage, themeColor);
+
+        // Efek visual pergantian theme
+        if (gameActive) {
+          spawnExplosion(playerBase.x, playerBase.y, themeColor, 200);
+          setTimeout(() => {
+            spawnExplosion(enemyBase.x, enemyBase.y, themeColor, 200);
+          }, 500);
+        }
+      }
+
       function drawPoisonBlades(ctx, playerX, playerY, camX, camY, angle) {
         const bladeCount = 10;
         const radius = 45;
@@ -3937,7 +4759,7 @@
           skin: "#8090a0",
           shirt: "#445566",
           hat: "#334455",
-          hp: 520,
+          hp: 20, //520
           atk: 22,
           def: 6,
           spd: 1.6,
@@ -3951,11 +4773,11 @@
           skin: "#9090a0",
           shirt: "#556644",
           hat: "#334422",
-          hp: 85,
+          hp: 8, //85
           atk: 28,
           def: 5,
           spd: 0.9,
-          range: 100,
+          range: 70,
           atkCD: 0.5,
           score: 20,
           xpGive: 28,
@@ -3965,7 +4787,7 @@
           skin: "#808090",
           shirt: "#665544",
           hat: "#443322",
-          hp: 640,
+          hp: 40, //640
           atk: 38,
           def: 20,
           spd: 1.0,
@@ -3979,7 +4801,7 @@
           skin: "#a09080",
           shirt: "#884422",
           hat: "#552200",
-          hp: 880,
+          hp: 80, //880
           atk: 52,
           def: 24,
           spd: 2.0,
@@ -3993,7 +4815,7 @@
           skin: "#ff4444",
           shirt: "#8b0000",
           hat: "#4a0000",
-          hp: 1200,
+          hp: 200, //1200
           atk: 80,
           def: 40,
           spd: 1.5,
@@ -4209,6 +5031,7 @@
       }
 
       function showLvUp() {
+        playLevelUp();
         const pop = document.getElementById("lvup-pop");
         const skUnlock = player.skills.find((s) => s.unlockLv === player.level);
         document.getElementById("lvup-msg").textContent =
@@ -4262,6 +5085,8 @@
         }
 
         target.hp -= dmg;
+
+        if (dmg > 0) playHit();
 
         // Debug untuk tower
         if (target.team === "enemy" || target.team === "ally") {
@@ -4336,7 +5161,7 @@
         }
         if (ent.type === "enemy") {
           kills++;
-          gold += ent.score;
+          gold += ent.score || 0;
           grantXP(ent.xpGive || 20);
           addKillFeed(
             `⚔ ${player.name} bunuh ${ent.name} +${ent.xpGive}XP`,
@@ -4362,7 +5187,7 @@
             `🏆 LORD ${ent.name} TELAH DIKALAHKAN! +${ent.score}G 🏆`,
             "#ffd700",
           );
-          gold += ent.score;
+          gold += Number(ent.score) || 0;
           grantXP(ent.xpGive);
           currentBoss = null;
         }
@@ -4403,10 +5228,11 @@
           spawnExplosion(ent.x, ent.y, "#ff8800", 80);
           addKillFeed(`💥 Kendaraan hancur!`, "#ff8800");
         }
-        if (ent.type === "player") startRespawn();
+        if (ent.type === "player") (startRespawn(), playDeath());
       }
 
       function killTower(tower, isAlly) {
+        playTowerDestroy();
         console.log(
           "killTower called - tower:",
           tower.id,
@@ -4460,7 +5286,7 @@
           enemyTowerCount = enemyTowers.length;
           document.getElementById("tb-etowers").textContent = enemyTowerCount;
           grantXP(150);
-          gold += 200;
+          gold = (isNaN(gold) ? 0 : gold) + 200;
           updateTopBar();
           addKillFeed(`🗼 Tower musuh ${tower.id} HANCUR! +200G`, "#ff8800");
           if (enemyTowerCount === 0) {
@@ -4473,11 +5299,35 @@
       // SKILLS
       // ================================================================
       function useSkill(idx) {
+        console.log(`========== useSkill CALLED ==========`);
+        console.log(`Parameter idx: ${idx}`);
+        console.log(`Skill name: ${player?.skills[idx]?.name}`);
+        console.log(`skillCDs before:`, [...skillCDs]);
+        playSkill();
         if (!player || player.dead || respawning || shopOpen) return;
         const sk = player.skills[idx];
         if (!sk || sk.locked) return;
         if (skillCDs[idx] > 0) return;
-        if (player.mp < sk.mp) return;
+        if (player.mp < sk.mp) {
+          showMPWarning();
+
+          // Efek visual tambahan - teks "MP!" di atas player
+          spawnDmgNum(player.x, player.y - 40, "MP!", "#88aaff");
+
+          // Efek bunyi visual (lingkaran biru di player)
+          effects.push({
+            x: player.x,
+            y: player.y,
+            r: 0,
+            maxR: 40,
+            life: 0.4,
+            maxLife: 0.4,
+            col: "rgba(136, 170, 255, 0.5)",
+            type: "ring",
+          });
+          return;
+        }
+
         player.mp -= sk.mp;
         skillCDs[idx] = sk.cd;
         const liveEnemies = [...enemies, ...enemyTowers].filter((e) => !e.dead);
@@ -4507,6 +5357,244 @@
               vy: -2,
             });
             break;
+
+          case "charge": {
+            // Skill Kereta Kencana - Charge ke depan dengan kereta perang
+
+            const chargeDistance = sk.range || 400;
+            const chargeDir = player.dir;
+            const startX = player.x;
+            const startY = player.y;
+            const chargeWidth = 80; // Lebar serangan
+
+            // Hitung posisi akhir charge
+            let endX =
+              player.x + (chargeDir > 0 ? chargeDistance : -chargeDistance);
+            let endY = player.y;
+
+            // Batasi dalam map
+            endX = Math.max(50, Math.min(MAP_W - 50, endX));
+            endY = Math.max(50, Math.min(MAP_H - 50, endY));
+
+            // Efek visual - jejak kereta
+            for (let i = 0; i <= 20; i++) {
+              const t = i / 20;
+              const trailX = startX + (endX - startX) * t;
+              const trailY = startY + (endY - startY) * t;
+
+              // Debu dan tanah berhamburan
+              particles.push({
+                x: trailX,
+                y: trailY,
+                vx: (Math.random() - 0.5) * 3,
+                vy: (Math.random() - 0.5) * 2 - 1,
+                life: 0.4,
+                maxLife: 0.4,
+                r: 4 + Math.random() * 6,
+                color: "#c0a070",
+              });
+
+              // Jejak kaki kuda
+              if (i % 2 === 0) {
+                effects.push({
+                  x: trailX,
+                  y: trailY + 15,
+                  icon: "🐎",
+                  life: 0.3,
+                  maxLife: 0.3,
+                  vy: -0.5,
+                });
+              }
+            }
+
+            // Efek gempa di tanah
+            for (let i = 0; i < 15; i++) {
+              const t = i / 15;
+              const trailX = startX + (endX - startX) * t;
+              const trailY = startY + (endY - startY) * t;
+              effects.push({
+                x: trailX,
+                y: trailY + 20,
+                r: 0,
+                maxR: 25,
+                life: 0.2,
+                maxLife: 0.2,
+                col: "#8b5a2b",
+                type: "ring",
+              });
+            }
+
+            // Pindahkan player ke posisi akhir
+            player.x = endX;
+            player.y = endY;
+
+            // Camera shake efek gempa
+            cameraShake = 0.25;
+
+            // Cari semua musuh di sepanjang jalur charge
+            const chargedEnemies = enemies.filter((e) => !e.dead);
+            const damagedEnemies = [];
+
+            chargedEnemies.forEach((e) => {
+              // Hitung jarak titik ke garis (jalur charge)
+              const distToLine = pointToLineDistance(
+                e.x,
+                e.y,
+                startX,
+                startY,
+                endX,
+                endY,
+              );
+
+              // Jika musuh berada di dekat jalur charge
+              if (distToLine < chargeWidth && Math.abs(e.y - startY) < 60) {
+                // Damage ke musuh
+                const damage = ri(sk.dmg[0], sk.dmg[1]);
+                dealDamage(e, damage, player);
+                damagedEnemies.push(e);
+
+                // Efek stun (kereta menabrak)
+                e.stunTimer = 1.2;
+
+                // Efek visual tertabrak
+                spawnHitParticle(e.x, e.y, "#ffaa44");
+                spawnDmgNum(e.x, e.y - 30, "💥", "#ffaa44");
+
+                // Efek dorongan mundur
+                const knockbackDir = e.x > player.x ? 1 : -1;
+                e.x += knockbackDir * 40;
+                e.y += (Math.random() - 0.5) * 20;
+
+                // Efek partikel benturan
+                for (let i = 0; i < 8; i++) {
+                  particles.push({
+                    x: e.x,
+                    y: e.y,
+                    vx: (Math.random() - 0.5) * 4,
+                    vy: (Math.random() - 0.5) * 3 - 2,
+                    life: 0.3,
+                    maxLife: 0.3,
+                    r: 3 + Math.random() * 5,
+                    color: "#ff8844",
+                  });
+                }
+              }
+            });
+
+            // BERIKAN SHIELD KE ALLY DI SEPANJANG JALUR
+            const alliesNearCharge = allies.filter((a) => !a.dead);
+            const shieldAmount = 120;
+            const healAmount = 40;
+
+            alliesNearCharge.forEach((ally) => {
+              const distToLine = pointToLineDistance(
+                ally.x,
+                ally.y,
+                startX,
+                startY,
+                endX,
+                endY,
+              );
+
+              // Jika ally berada di dekat jalur charge
+              if (distToLine < chargeWidth && Math.abs(ally.y - startY) < 80) {
+                // Berikan shield
+                if (!ally.shieldActive) {
+                  ally.shieldActive = true;
+                  ally.shield = shieldAmount;
+                  ally.shieldMax = shieldAmount;
+                  spawnDmgNum(
+                    ally.x,
+                    ally.y - 30,
+                    `🛡️ +${shieldAmount}`,
+                    "#88aaff",
+                  );
+
+                  effects.push({
+                    x: ally.x,
+                    y: ally.y,
+                    icon: "🛡️",
+                    life: 0.5,
+                    maxLife: 0.5,
+                    vy: -2,
+                  });
+                }
+
+                // Heal ally
+                const actualHeal = Math.min(ally.maxHp - ally.hp, healAmount);
+                if (actualHeal > 0) {
+                  ally.hp += actualHeal;
+                  spawnDmgNum(ally.x, ally.y - 30, `+${actualHeal}`, "#7dff8a");
+
+                  effects.push({
+                    x: ally.x,
+                    y: ally.y,
+                    icon: "❤️",
+                    life: 0.4,
+                    maxLife: 0.4,
+                    vy: -1,
+                  });
+                }
+              }
+            });
+
+            // BERIKAN HEAL KE PLAYER SENDIRI
+            const selfHeal = healAmount;
+            player.hp = Math.min(player.maxHp, player.hp + selfHeal);
+            spawnDmgNum(player.x, player.y - 30, `+${selfHeal}`, "#7dff8a");
+
+            // Efek ledakan di akhir charge
+            spawnExplosion(player.x, player.y, "#ffcc66", 70);
+
+            // Efek visual - kilatan cahaya
+            effects.push({
+              x: player.x,
+              y: player.y,
+              icon: "✨",
+              life: 0.6,
+              maxLife: 0.6,
+              vy: -3,
+            });
+
+            // Efek suara visual (dentuman)
+            for (let i = 0; i < 12; i++) {
+              setTimeout(() => {
+                if (gameActive) {
+                  particles.push({
+                    x: player.x + (Math.random() - 0.5) * 100,
+                    y: player.y + (Math.random() - 0.5) * 60,
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: (Math.random() - 0.5) * 1 - 0.5,
+                    life: 0.3,
+                    maxLife: 0.3,
+                    r: 2 + Math.random() * 4,
+                    color: "#ffaa66",
+                  });
+                }
+              }, i * 30);
+            }
+
+            // Kirim pesan ke killfeed
+            const enemyCount = damagedEnemies.length;
+            const allyCount = alliesNearCharge.filter((a) => {
+              const distToLine = pointToLineDistance(
+                a.x,
+                a.y,
+                startX,
+                startY,
+                endX,
+                endY,
+              );
+              return distToLine < chargeWidth && Math.abs(a.y - startY) < 80;
+            }).length;
+
+            addKillFeed(
+              `🏇 KERETA KENCANA! ${enemyCount} musuh tertabrak! ${allyCount} ally mendapat shield & heal!`,
+              "#ffcc66",
+            );
+
+            break;
+          }
 
           case "oil_ball": {
             if (near) {
@@ -6195,6 +7283,8 @@
       }
 
       function buyItem(item) {
+        playBuy();
+        if (isNaN(gold)) gold = 0;
         if (gold < item.price) return;
         gold -= item.price;
         addKillFeed(`🛒 Beli: ${item.name}`, "#ffd700");
@@ -6426,6 +7516,7 @@
         }
       }
       function spawnExplosion(x, y, col, size) {
+        if (size > 60) playExplosion();
         for (let i = 0; i < 14; i++) {
           const a = Math.random() * Math.PI * 2,
             spd = 1.5 + Math.random() * 3.5;
@@ -6451,12 +7542,69 @@
           type: "ring",
         });
       }
+      // Fungsi untuk menampilkan notifikasi MP tidak cukup
+      function showMPWarning() {
+        // Buat elemen notifikasi
+        const notification = document.createElement("div");
+        notification.className = "mp-warning";
+        notification.innerHTML = "💧 MANA TIDAK CUKUP! 💧";
 
+        // Style notifikasi
+        notification.style.position = "fixed";
+        notification.style.bottom = "80px";
+        notification.style.left = "50%";
+        notification.style.transform = "translateX(-50%)";
+        notification.style.background = "rgba(0, 0, 0, 0.85)";
+        notification.style.border = "2px solid #88aaff";
+        notification.style.borderRadius = "8px";
+        notification.style.padding = "8px 16px";
+        notification.style.fontSize = "8px";
+        notification.style.fontFamily = "'Press Start 2P', monospace";
+        notification.style.color = "#88aaff";
+        notification.style.textAlign = "center";
+        notification.style.zIndex = "500";
+        notification.style.animation = "mpWarningFade 1.2s ease-out forwards";
+        notification.style.pointerEvents = "none";
+
+        document.body.appendChild(notification);
+
+        // Hapus notifikasi setelah animasi selesai
+        setTimeout(() => {
+          if (notification && notification.remove) {
+            notification.remove();
+          }
+        }, 1200);
+      }
+
+      // Tambahkan animasi CSS untuk notifikasi MP
+      const style = document.createElement("style");
+      style.textContent = `
+  @keyframes mpWarningFade {
+    0% {
+      opacity: 0;
+      transform: translateX(-50%) translateY(20px);
+    }
+    15% {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    85% {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(-50%) translateY(-20px);
+    }
+  }
+`;
+      document.head.appendChild(style);
       // ================================================================
       // HUD
       // ================================================================
       function updateTopBar() {
         if (!player) return;
+        if (isNaN(gold)) gold = 0;
         document.getElementById("tb-gold").textContent = gold;
         document.getElementById("tb-lv").textContent = player.level;
         document.getElementById("tb-xpfill").style.width =
@@ -6480,11 +7628,15 @@
         const cont = document.getElementById("skill-slots");
         if (!player) return;
         cont.innerHTML = "";
-        // Urutan skill: 1, 2, 3, 4, 5
         const keyLabels = ["1", "2", "3", "4", "5", "6"];
         player.skills.forEach((sk, i) => {
           const btn = document.createElement("div");
           btn.className = "sk-btn" + (sk.locked ? " locked" : "");
+          const hasEnoughMp = player.mp >= sk.mp;
+          if (!hasEnoughMp && !sk.locked && skillCDs[i] <= 0) {
+            btn.style.opacity = "0.6";
+            btn.style.filter = "grayscale(0.3)";
+          }
           btn.innerHTML = `<span class="sk-icon">${sk.icon}</span><span class="sk-name">${sk.name}</span><span class="sk-key">${keyLabels[i]}</span>`;
           if (skillCDs[i] > 0.05) {
             const cd = document.createElement("div");
@@ -6501,6 +7653,32 @@
           btn.onclick = () => useSkill(i);
           cont.appendChild(btn);
         });
+
+        // ========== PERBAIKAN: Update mobile skill bar hanya jika perlu ==========
+        // Jangan panggil setiap kali updateSkillBar dipanggil
+        // Hanya panggil sekali setelah game start
+        // Hapus baris ini: updateMobileSkillBar();
+      }
+
+      // Tambahkan di dalam fungsi updateTopBar() atau di gameLoop
+      function updateMpVisual() {
+        if (!player) return;
+
+        // Efek visual saat MP rendah (kurang dari 30%)
+        const mpPercent = player.mp / player.maxMp;
+        const mpBar = document.getElementById("sb-mp");
+        const mpNum = document.getElementById("sb-mp-num");
+
+        if (mpPercent < 0.3 && mpPercent > 0) {
+          mpBar.style.background = "#ffaa66";
+          mpNum.style.color = "#ffaa66";
+        } else if (mpPercent <= 0) {
+          mpBar.style.background = "#ff6666";
+          mpNum.style.color = "#ff6666";
+        } else {
+          mpBar.style.background = "var(--blue)";
+          mpNum.style.color = "var(--blue)";
+        }
       }
 
       function addKillFeed(msg, col = "#fff") {
@@ -6515,6 +7693,7 @@
       }
 
       function updateMinimap() {
+        if (!mmCtx) return;
         mmCtx.clearRect(0, 0, 120, 90);
         mmCtx.fillStyle = "rgba(0,0,0,.5)";
         mmCtx.fillRect(0, 0, 120, 90);
@@ -6611,8 +7790,77 @@
               bgCtx.font = "28px serif";
               bgCtx.textAlign = "center";
               bgCtx.textBaseline = "middle";
-              bgCtx.fillStyle = isNightMode ? "#2a5a2a" : "#5a8a4a";
-              bgCtx.fillText("🌲", tx + TILE / 2, ty + TILE / 2);
+              // Icon pepohonan berbeda berdasarkan theme
+              if (currentMapTheme === "lava") {
+                bgCtx.fillStyle = "#ffaa66";
+                bgCtx.fillText("🌋", tx + TILE / 2, ty + TILE / 2);
+              } else if (currentMapTheme === "meteo") {
+                bgCtx.fillStyle = "#cc88ff";
+                bgCtx.fillText("☄️", tx + TILE / 2, ty + TILE / 2);
+              } else if (currentMapTheme === "space") {
+                bgCtx.fillStyle = "#88aaff";
+                bgCtx.fillText("⭐", tx + TILE / 2, ty + TILE / 2);
+              } else {
+                bgCtx.fillStyle = isNightMode ? "#2a5a2a" : "#5a8a4a";
+                bgCtx.fillText("🌲", tx + TILE / 2, ty + TILE / 2);
+              }
+            }
+          }
+        }
+
+        // ========== EFEK THEME TAMBAHAN ==========
+
+        // Efek Theme LAVA (partikel api di tanah)
+        if (currentMapTheme === "lava" && gameActive) {
+          for (let i = 0; i < 5; i++) {
+            if (Math.random() < 0.05) {
+              const randX = cam.x + Math.random() * W;
+              const randY = cam.y + Math.random() * H;
+              particles.push({
+                x: randX,
+                y: randY,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: -0.5 - Math.random() * 1,
+                life: 0.5,
+                maxLife: 0.5,
+                r: 2 + Math.random() * 4,
+                color: "#ff8844",
+              });
+            }
+          }
+        }
+
+        // Efek Theme METEO (bintang jatuh di background)
+        if (currentMapTheme === "meteo" && gameActive) {
+          if (Math.random() < 0.02) {
+            const startX = cam.x + Math.random() * W;
+            const startY = cam.y + Math.random() * 50;
+            for (let i = 0; i < 8; i++) {
+              particles.push({
+                x: startX + i * 15,
+                y: startY + i * 8,
+                vx: (Math.random() - 0.5) * 2,
+                vy: (Math.random() - 0.5) * 1,
+                life: 0.3,
+                maxLife: 0.3,
+                r: 2,
+                color: "#ffaa88",
+              });
+            }
+          }
+        }
+
+        // Efek Theme SPACE (bintang berkelap-kelip)
+        if (currentMapTheme === "space") {
+          const starCount = 50;
+          for (let i = 0; i < starCount; i++) {
+            if (Math.random() < 0.01) {
+              const starX = cam.x + Math.random() * W;
+              const starY = cam.y + Math.random() * H;
+              bgCtx.fillStyle = `rgba(255, 255, 200, ${0.3 + Math.random() * 0.7})`;
+              bgCtx.beginPath();
+              bgCtx.arc(starX, starY, 1 + Math.random() * 2, 0, Math.PI * 2);
+              bgCtx.fill();
             }
           }
         }
@@ -6791,6 +8039,29 @@
           const angle = Date.now() / 300;
           drawAngel(gCtx, angel.x, angel.y, angel.type, angle);
         });
+
+        // Di dalam fungsi render(), sebelum drawList
+        // Efek visual untuk skill Kereta Kencana (bisa ditambahkan di bagian effects)
+        if (window.keretaEffect && window.keretaEffect.active) {
+          const kereta = window.keretaEffect;
+          const progress = kereta.progress;
+          const currentX =
+            kereta.startX + (kereta.endX - kereta.startX) * progress;
+          const currentY =
+            kereta.startY + (kereta.endY - kereta.startY) * progress;
+
+          // Gambar kereta
+          uCtx.save();
+          uCtx.font = "28px serif";
+          uCtx.textAlign = "center";
+          uCtx.textBaseline = "middle";
+          uCtx.shadowBlur = 10;
+          uCtx.shadowColor = "rgba(255, 200, 100, 0.8)";
+          uCtx.fillText("🏇", currentX - cam.x, currentY - cam.y - 10);
+          uCtx.fillText("🐎", currentX - cam.x - 15, currentY - cam.y - 5);
+          uCtx.fillText("🐎", currentX - cam.x + 15, currentY - cam.y - 5);
+          uCtx.restore();
+        }
 
         // Di dalam fungsi render(), setelah draw portal atau sebelum drawList
         // Draw Earth Susanoo - Versi Lebih Besar
@@ -7471,12 +8742,30 @@
         ally.atkTimer = Math.max(0, ally.atkTimer - dt);
         const liveEnemies = [...enemies, ...enemyTowers].filter((e) => !e.dead);
         if (!liveEnemies.length) {
-          const dx = enemyBase.x - ally.x,
-            dy = enemyBase.y - ally.y;
-          const len = Math.hypot(dx, dy) || 1;
-          ally.vx = (dx / len) * ally.spd * 0.5;
-          ally.vy = (dy / len) * ally.spd * 0.3;
+          const dx = enemyBase.x - ally.x;
+          const dy = enemyBase.y - ally.y;
+          const distToBase = Math.hypot(dx, dy);
+          const len = distToBase || 1;
+          // Bergerak bebas ke base, tidak terpaku di lane
+          ally.vx = (dx / len) * ally.spd * 0.8;
+          ally.vy = (dy / len) * ally.spd * 0.8;
           ally.dir = dx > 0 ? 1 : -1;
+          // Serang base jika sudah dekat
+          if (distToBase <= ally.range * 0.9 && ally.atkTimer <= 0) {
+            const raw = ri(ally.atk - 5, ally.atk + 8);
+            enemyBase.hp = Math.max(0, enemyBase.hp - raw * 0.15);
+            spawnDmgNum(
+              enemyBase.x,
+              enemyBase.y - 20,
+              Math.floor(raw * 0.3),
+              "#88ff88",
+            );
+            ally.atkTimer = ally.atkCD * 2;
+            if (enemyBase.hp <= 0) {
+              stageClear();
+              return;
+            }
+          }
           return;
         }
         let target = null,
@@ -7906,11 +9195,18 @@
 
         // If all ally towers are gone and player is far, march to base
         if (allyTowerCount === 0) {
-          const dx = playerBase.x - enemy.x,
-            dy = playerBase.y - enemy.y;
-          if (Math.hypot(dx, dy) < 90 && enemy.atkTimer <= 0) {
+          const dx = playerBase.x - enemy.x;
+          const dy = playerBase.y - enemy.y;
+          const distToBase = Math.hypot(dx, dy);
+          // Jika jauh dari base, bergerak menuju base (semua lane)
+          if (distToBase > 90) {
+            const len = distToBase || 1;
+            enemy.vx = (dx / len) * enemy.spd * 0.9;
+            enemy.vy = (dy / len) * enemy.spd * 0.9; // bergerak bebas ke base
+            enemy.dir = dx > 0 ? 1 : -1;
+          } else if (enemy.atkTimer <= 0) {
             const raw = ri(enemy.atk - 5, enemy.atk + 8);
-            playerBase.hp = Math.max(0, playerBase.hp - raw * 0.5);
+            playerBase.hp = Math.max(0, playerBase.hp - raw * 0.2);
             spawnDmgNum(
               playerBase.x,
               playerBase.y - 20,
@@ -8072,35 +9368,63 @@
         timerStr = (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
         document.getElementById("timer-display").textContent = timerStr;
 
-        // Input
+        // ========== INPUT HANDLING ==========
         if (!player.dead && !respawning && !shopOpen) {
-          let vx = 0,
-            vy = 0;
-          if (keys["KeyW"] || keys["ArrowUp"])
-            vy = -player.spd * (playerSpeedMult || 1);
-          if (keys["KeyS"] || keys["ArrowDown"])
-            vy = player.spd * (playerSpeedMult || 1);
-          if (keys["KeyA"] || keys["ArrowLeft"]) {
-            vx = -player.spd * (playerSpeedMult || 1);
-            player.dir = -1;
+          // Cek apakah ini mobile (dengan joystick aktif)
+          const isMobile =
+            /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+              navigator.userAgent,
+            );
+
+          if (isMobile && mobileJoystick) {
+            // Gunakan input mobile (joystick + tombol)
+            handleMobileInput();
+          } else {
+            // Gunakan keyboard (desktop)
+            let vx = 0,
+              vy = 0;
+            if (keys["KeyW"] || keys["ArrowUp"])
+              vy = -player.spd * (playerSpeedMult || 1);
+            if (keys["KeyS"] || keys["ArrowDown"])
+              vy = player.spd * (playerSpeedMult || 1);
+            if (keys["KeyA"] || keys["ArrowLeft"]) {
+              vx = -player.spd * (playerSpeedMult || 1);
+              player.dir = -1;
+            }
+            if (keys["KeyD"] || keys["ArrowRight"]) {
+              vx = player.spd * (playerSpeedMult || 1);
+              player.dir = 1;
+            }
+            if (vx && vy) {
+              vx *= 0.707;
+              vy *= 0.707;
+            }
+            player.vx = vx;
+            player.vy = vy;
           }
-          if (keys["KeyD"] || keys["ArrowRight"]) {
-            vx = player.spd * (playerSpeedMult || 1);
-            player.dir = 1;
-          }
-          if (vx && vy) {
-            vx *= 0.707;
-            vy *= 0.707;
-          }
-          player.vx = vx;
-          player.vy = vy;
+
           player.atkTimer = Math.max(0, (player.atkTimer || 0) - dt);
+
+          // Keyboard skills (tetap support untuk desktop)
           if (keys["Digit1"]) useSkill(0);
           if (keys["Digit2"]) useSkill(1);
           if (keys["Digit3"]) useSkill(2);
           if (keys["Digit4"]) useSkill(3);
           if (keys["Digit5"]) useSkill(4);
           if (keys["Digit6"]) useSkill(5);
+        }
+
+        // ========== PERBAIKAN: HANYA SATU KALI PANGGIL updateMobileCDs ==========
+        const isMobile =
+          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+            navigator.userAgent,
+          );
+        if (isMobile && typeof updateMobileCDs === "function") {
+          try {
+            updateMobileCDs();
+          } catch (e) {
+            console.warn("updateMobileCDs error:", e);
+          }
         }
 
         // Update player
@@ -8181,7 +9505,7 @@
               const raw = Math.floor(
                 ri(player.atk - 4, player.atk + 8) * (playerRageMult || 1),
               );
-              enemyBase.hp = Math.max(0, enemyBase.hp - raw * 0.5);
+              enemyBase.hp = Math.max(0, enemyBase.hp - raw * 0.2);
               spawnDmgNum(
                 enemyBase.x,
                 enemyBase.y - 20,
@@ -8262,6 +9586,31 @@
           // Reset timer untuk spawn berikutnya (2 menit)
           lordSpawnTimer = 120;
           console.log(`Lord spawn timer reset to ${lordSpawnTimer} seconds`);
+        }
+
+        // Di dalam gameLoop, tambahkan setelah lordSpawnTimer berkurang
+        if (
+          lordSpawnTimer > 0 &&
+          lordSpawnTimer <= 30 &&
+          lordSpawnTimer + dt > 30
+        ) {
+          // Saat timer mencapai 30 detik
+          addKillFeed(
+            "⚠️ 30 DETIK MENUJU KEDATANGAN LORD! BERSIAPLAH! ⚠️",
+            "#ff8844",
+          );
+        }
+
+        if (
+          lordSpawnTimer > 0 &&
+          lordSpawnTimer <= 10 &&
+          lordSpawnTimer + dt > 10
+        ) {
+          // Saat timer mencapai 10 detik
+          addKillFeed(
+            "🔥🔥🔥 LORD AKAN MUNCUL DALAM 10 DETIK! 🔥🔥🔥",
+            "#ffaa44",
+          );
         }
 
         // Update allies
@@ -8500,6 +9849,94 @@
             addKillFeed(`🗿 Susanoo Tanah telah menghilang!`, "#ccaa88");
           }
         }
+
+        // Di dalam gameLoop(), setelah update oil spills, tambahkan:
+
+        // ========== EFEK THEME METEOR ==========
+        if (currentMapTheme === "meteo" && gameActive) {
+          meteorTimer -= dt;
+          if (meteorTimer <= 0) {
+            meteorTimer = 20; // Setiap 20 detik
+
+            // Hujan meteor
+            const meteorCount = 3 + Math.floor(Math.random() * 4);
+            for (let i = 0; i < meteorCount; i++) {
+              setTimeout(() => {
+                const meteorX = cam.x + Math.random() * W;
+                const meteorY = cam.y - 50;
+                const targetX = meteorX + (Math.random() - 0.5) * 200;
+                const targetY = meteorY + 400;
+
+                // Damage area
+                enemies.forEach((enemy) => {
+                  if (
+                    !enemy.dead &&
+                    dist2Plain(enemy.x, enemy.y, targetX, targetY) < 100
+                  ) {
+                    dealDamage(enemy, ri(50, 100), null, "burn");
+                    enemy.burnTimer = 3;
+                  }
+                });
+
+                // Efek meteor
+                spawnExplosion(targetX, targetY, "#ff8844", 80);
+                addKillFeed("☄️ HUJAN METEOR! WASPADA! ☄️", "#ffaa66");
+              }, i * 300);
+            }
+          }
+        }
+
+        // ========== EFEK THEME LAVA ==========
+        if (currentMapTheme === "lava" && gameActive) {
+          // Damage burn untuk semua unit di rumput (tile 0)
+          enemies.forEach((enemy) => {
+            if (!enemy.dead) {
+              const tileC = Math.floor(enemy.x / TILE);
+              const tileR = Math.floor(enemy.y / TILE);
+              if (tileR >= 0 && tileR < ROWS && tileC >= 0 && tileC < COLS) {
+                const terrain = TMAP[tileR][tileC];
+                if (terrain === 0 && Math.random() < 0.05) {
+                  if (!enemy.lavaBurned) {
+                    enemy.lavaBurned = true;
+                    dealDamage(enemy, ri(5, 15), null, "burn");
+                    setTimeout(() => {
+                      if (enemy) enemy.lavaBurned = false;
+                    }, 1000);
+                  }
+                }
+              }
+            }
+          });
+        }
+
+        // ========== EFEK THEME SPACE ==========
+        if (currentMapTheme === "space" && gameActive) {
+          // Kecepatan semua unit +30% (gravitasi rendah)
+          if (player && !player.dead && !player.spaceSpeedBuff) {
+            player.spaceSpeedBuff = true;
+            player.originalSpd = player.spd;
+            player.spd = player.spd * 1.3;
+          }
+
+          // Efek anti-gravitasi (partikel melayang)
+          if (Math.random() < 0.05) {
+            particles.push({
+              x: player.x + (Math.random() - 0.5) * 80,
+              y: player.y + (Math.random() - 0.5) * 80,
+              vx: (Math.random() - 0.5) * 0.3,
+              vy: (Math.random() - 0.5) * 0.3 - 0.2,
+              life: 1.5,
+              maxLife: 1.5,
+              r: 1 + Math.random() * 2,
+              color: "#88aaff",
+            });
+          }
+        } else if (player && player.spaceSpeedBuff) {
+          // Reset speed saat keluar dari mode space
+          player.spd = player.originalSpd;
+          player.spaceSpeedBuff = false;
+        }
+
         // Di dalam gameLoop(), setelah update animals, tambahkan:
         // Update portal
         if (portalActive) {
@@ -8756,6 +10193,8 @@
         for (let i = 0; i < 6; i++)
           if (skillCDs[i] > 0) skillCDs[i] = Math.max(0, skillCDs[i] - dt);
 
+        if (typeof updateMobileCDs === "function") updateMobileCDs();
+
         // Particles/effects
         particles = particles.filter((p) => {
           p.x += p.vx;
@@ -8861,6 +10300,15 @@
       // STAGE CLEAR / END
       // ================================================================
       function stageClear() {
+        playStageClear();
+        // ========== TAMBAHKAN INI - RESET POSISI PLAYER KE BASE SEBELUM STAGE CLEAR ==========
+        if (player) {
+          player.x = playerBase.x;
+          player.y = playerBase.y + (Math.random() - 0.5) * 80;
+          player.vx = 0;
+          player.vy = 0;
+        }
+        // ===================================================================================
         gameActive = false;
         const pop = document.getElementById("stage-pop");
         document.getElementById("sp-title").textContent =
@@ -8880,6 +10328,18 @@
         // TAMBAHKAN: Aktifkan mode malam jika stage 2 atau lebih
         isNightMode = stage >= 2;
 
+        // ========== UPDATE MAP THEME BERDASARKAN STAGE ==========
+        updateMapThemeByStage(stage);
+
+        // Reset efek space jika sebelumnya aktif
+        if (player && player.spaceSpeedBuff) {
+          player.spd = player.originalSpd;
+          player.spaceSpeedBuff = false;
+        }
+
+        // Reset meteor timer
+        meteorTimer = 0;
+
         // Heal player partially
         player.hp = Math.min(
           player.maxHp,
@@ -8887,6 +10347,14 @@
         );
         player.mp = player.maxMp;
         gold += 300;
+
+        // ========== TAMBAHKAN INI - RESET POSISI PLAYER KE BASE ==========
+        player.x = playerBase.x;
+        player.y = playerBase.y + (Math.random() - 0.5) * 80;
+        player.vx = 0;
+        player.vy = 0;
+        player.dead = false;
+        // ===============================================================
         // Reset battlefield
         enemies = [];
         projectiles = [];
@@ -8897,7 +10365,7 @@
         vehicles = [];
         animals = [];
         playerBase.hp = playerBase.maxHp;
-        enemyBase.hp = 1000 + stage * 300;
+        enemyBase.hp = 10000 + stage * 500;
         enemyBase.maxHp = enemyBase.hp;
         buildEnemyTowers();
         buildAllyTowers();
@@ -8918,11 +10386,11 @@
         bossKilled = false;
 
         // ========== TAMBAHKAN INI - RESET LORD UNTUK STAGE BARU ==========
-        lordSpawnTimer = 120; // Reset timer untuk stage baru
+        lordSpawnTimer = 480; // Reset timer untuk stage baru
         currentBoss = null;
         currentAllyLord = null;
         console.log(
-          `🌟 Stage ${stage} started! Lord akan muncul dalam 120 detik`,
+          `🌟 Stage ${stage} started! Lord akan muncul dalam 8 menit`,
         );
         // ===============================================================
 
@@ -8974,37 +10442,150 @@
       // ================================================================
       // CHAR SELECT
       // ================================================================
+
+      // SCROLL TOMBOL
+      function scrollCards(dir) {
+        const row = document.getElementById("csel-row");
+        row.scrollBy({ left: dir * 300, behavior: "smooth" });
+      }
+
+      // KEYBOARD ARROW
+      document.addEventListener("keydown", (e) => {
+        // Hanya aktif saat char select terbuka
+        const charSelect = document.getElementById("char-select");
+        if (charSelect.style.display === "none") return;
+
+        const row = document.getElementById("csel-row");
+        if (e.code === "ArrowLeft") {
+          row.scrollBy({ left: -300, behavior: "smooth" });
+        }
+        if (e.code === "ArrowRight") {
+          row.scrollBy({ left: 300, behavior: "smooth" });
+        }
+      });
+
+      // MOUSE WHEEL - scroll horizontal
+      document.getElementById("csel-row")?.addEventListener(
+        "wheel",
+        (e) => {
+          if (e.target.closest(".tab-content")) return;
+          e.preventDefault();
+          const row = document.getElementById("csel-row");
+          row.scrollBy({ left: e.deltaY * 2, behavior: "smooth" });
+        },
+        { passive: false },
+      );
       let selIdx = null;
       function buildCharSelect() {
         const row = document.getElementById("csel-row");
         row.innerHTML = "";
+
         HEROES.forEach((h, i) => {
           const card = document.createElement("div");
           card.className = "cc";
-          const statBar = (v, col) =>
-            `<div class="stat-bar-w"><div class="stat-bar-f" style="width:${v}%;background:${col};"></div></div>`;
 
-          // Tambahkan icon senjata di card
-          const weaponIcon =
-            h.weapon === "sword"
-              ? "⚔️"
-              : h.weapon === "mace"
-                ? "🔨"
-                : h.weapon === "bow"
-                  ? "🏹"
-                  : h.weapon === "dagger"
-                    ? "🗡️"
-                    : h.weapon === "staff"
-                      ? "🔱"
-                      : h.weapon === "flower"
-                        ? "🌸"
-                        : "";
+          const statBar = (value, maxValue, color) => {
+            const percent = Math.min(100, (value / maxValue) * 100);
+            return `<div class="stat-bar-w"><div class="stat-bar-f" style="width:${percent}%;background:${color};"></div></div>`;
+          };
 
-          card.innerHTML = `<canvas class="cc-sprite" width="60" height="72" id="csp${i}"></canvas><div class="cc-name">${h.name}</div><div class="cc-role">${h.role}</div><div class="cc-stat">HP:<b>${h.hp}</b>${statBar(h.stats.atk, "#e84040")}ATK:<b>${h.atk}</b>${statBar(h.stats.def, "#3498db")}SPD:<b>${h.spd}</b>${statBar(h.stats.spd, "#27ae60")}<span style="font-size:5px;color:#666;">${h.skills
-            .slice(0, 3)
-            .map((s) => s.icon)
-            .join(" ")} +${h.skills.length - 3}★</span></div>`;
-          card.onclick = () => {
+          const skillsHtml = h.skills
+            .map((sk, idx) => {
+              const keyLabels = ["1", "2", "3", "4", "5", "6"];
+              const lockInfo = sk.unlockLv
+                ? `<span class="skill-lock-info">🔒 Lv${sk.unlockLv}</span>`
+                : "";
+              const mpText = sk.mp > 0 ? `💧 ${sk.mp} MP` : "⚡ Gratis";
+              const dmgText =
+                sk.dmg[0] > 0 ? `⚔️ ${sk.dmg[0]}-${sk.dmg[1]}` : "";
+              return `
+        <div class="skill-preview">
+          <div class="skill-header-preview">
+            <span class="skill-icon-preview">${sk.icon}</span>
+            <span class="skill-name-preview">${sk.name}</span>
+            <span class="skill-key-preview">[${keyLabels[idx]}]</span>
+            ${lockInfo}
+          </div>
+          <div class="skill-desc-preview">${sk.desc}</div>
+          <div class="skill-stats-preview">
+            <span class="skill-mp-preview">${mpText}</span>
+            <span class="skill-cd-preview">⏱ ${sk.cd}s</span>
+            ${dmgText ? `<span class="skill-dmg-preview">${dmgText}</span>` : ""}
+          </div>
+        </div>`;
+            })
+            .join("");
+
+          const bioText = (h.bio || "Belum ada data biografi.").replace(
+            /\n/g,
+            "<br>",
+          );
+          const storyText = (h.story || "Belum ada cerita.").replace(
+            /\n/g,
+            "<br>",
+          );
+          const heroicText = (
+            h.heroicTale || "Belum ada kisah kepahlawanan."
+          ).replace(/\n/g, "<br>");
+
+          card.innerHTML = `
+      <canvas class="cc-sprite" width="60" height="72" id="csp${i}"></canvas>
+      <div class="cc-name">${h.name}</div>
+      <div class="cc-role">${h.role}</div>
+      <div class="cc-stats">
+        <div class="stat-row"><span>❤️ HP</span><b>${h.hp}</b>${statBar(h.hp, 1000, "#40c040")}</div>
+        <div class="stat-row"><span>✨ ATK</span><b>${h.atk}</b>${statBar(h.atk, 80, "#e84040")}</div>
+        <div class="stat-row"><span>🛡️ DEF</span><b>${h.def}</b>${statBar(h.def, 50, "#3498db")}</div>
+        <div class="stat-row"><span>⚡ SPD</span><b>${h.spd}</b>${statBar(h.spd, 6, "#27ae60")}</div>
+      </div>
+      <div class="cc-tabs">
+        <button class="tab-btn active" data-tab="bio">📜 Bio</button>
+        <button class="tab-btn" data-tab="story">📖 Cerita</button>
+        <button class="tab-btn" data-tab="heroic">🏆 Heroik</button>
+        <button class="tab-btn" data-tab="skills">⚔️ Skill</button>
+      </div>
+     <div class="tab-content cc-bio active">
+  <div class="tab-header">📜 BIOGRAFI</div>
+  <div class="tab-text bio-text">${bioText}</div>
+</div>
+<div class="tab-content cc-story">
+  <div class="tab-header">📖 CERITA SINGKAT</div>
+  <div class="tab-text story-text">${storyText}</div>
+</div>
+<div class="tab-content cc-heroic">
+  <div class="tab-header heroic-header">🏆 KISAH KEPAHLAWANAN</div>
+  <div class="tab-text heroic-text">${heroicText}</div>
+</div>
+<div class="tab-content cc-skills">
+  <div class="tab-header">⚔️ DAFTAR SKILL</div>
+  <div class="skills-list">${skillsHtml}</div>
+</div>`;
+
+          // TAB LISTENER - scoped per card
+          card.querySelectorAll(".tab-btn").forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+              e.stopPropagation();
+              const tab = btn.dataset.tab;
+              card
+                .querySelectorAll(".tab-content")
+                .forEach((c) => c.classList.remove("active"));
+              card.querySelector(".cc-" + tab).classList.add("active");
+            });
+          });
+
+          // CEGAH SCROLL BOCOR KE CARD ROW
+          card.querySelectorAll(".tab-content").forEach((content) => {
+            content.addEventListener(
+              "wheel",
+              (e) => {
+                e.stopPropagation();
+              },
+              { passive: true },
+            );
+          });
+          // CARD CLICK - pilih hero
+          card.addEventListener("click", (e) => {
+            if (e.target.closest(".tab-btn")) return;
             document
               .querySelectorAll(".cc")
               .forEach((c) => c.classList.remove("sel"));
@@ -9012,18 +10593,23 @@
             selIdx = i;
             selectedHero = h;
             document.getElementById("csel-go").disabled = false;
-          };
+          });
+
           row.appendChild(card);
+
+          // DRAW SPRITE
           setTimeout(() => {
             const c = document.getElementById("csp" + i);
             if (!c) return;
             const cx = c.getContext("2d");
-            cx.scale(1.3, 1.3);
+            cx.clearRect(0, 0, 60, 72);
+            cx.save();
+            cx.scale(1.2, 1.2);
             drawPixelChar(
               cx,
-              23,
-              46,
-              36,
+              28,
+              42,
+              32,
               h.skin,
               h.shirt,
               h.hat,
@@ -9032,17 +10618,20 @@
               1,
               false,
               false,
-              h.weapon || "", // Kirim weapon
-              h.crown || false, // Kirim crown
+              h.weapon || "",
+              h.crown || false,
             );
+            cx.restore();
           }, 50);
         });
       }
 
       function startGame() {
         if (!selectedHero) return;
+
         document.getElementById("char-select").style.display = "none";
         document.getElementById("tb-heroname").textContent = selectedHero.name;
+
         const wrap = document.getElementById("game-wrap");
         W = wrap.clientWidth;
         H = wrap.clientHeight;
@@ -9073,21 +10662,18 @@
         gameTime = 0;
         spawnTimer = 5;
         allySpawnTimer = 20;
-        // Reset Earth Susanoo
         earthSusanooActive = false;
         earthSusanooTimer = 0;
         earthSusanooDamageReduction = 0;
         respawning = false;
         bossKilled = false;
         stage = 1;
-        isNightMode = false; // TAMBAHKAN: Reset mode malam untuk stage 1
-
-        // ========== TAMBAHKAN INI - INISIALISASI LORD ==========
-        lordSpawnTimer = 120; // 2 menit (120 detik)
+        currentMapTheme = "normal";
+        isNightMode = false;
+        meteorTimer = 0;
+        lordSpawnTimer = 480;
         currentBoss = null;
         currentAllyLord = null;
-        console.log("🎮 Game started! Lord akan muncul dalam 120 detik");
-        // =====================================================
 
         document.getElementById("stg-num").textContent = "1";
         document.getElementById("tb-etowers").textContent = "3";
@@ -9096,9 +10682,25 @@
           setTimeout(() => {
             if (gameActive) enemies.push(spawnEnemyUnit(0, 1));
           }, i * 1200);
+
         updateSkillBar();
         updateTopBar();
+
+        // ========== PERBAIKAN: Set gameActive = true DULU ==========
         gameActive = true;
+
+        // ========== PERBAIKAN: Inisialisasi mobile skill bar SEKALI ==========
+        if (
+          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+            navigator.userAgent,
+          )
+        ) {
+          // Beri sedikit delay untuk memastikan DOM siap
+          setTimeout(() => {
+            initMobileSkillBar();
+          }, 100);
+        }
+
         lastTime = performance.now();
         requestAnimationFrame(gameLoop);
       }
@@ -9132,6 +10734,7 @@
           ].includes(e.code)
         )
           e.preventDefault();
+        initMobileControls();
       });
       document.addEventListener("keyup", (e) => {
         keys[e.code] = false;
@@ -9146,9 +10749,924 @@
           c.height = H;
         });
       });
-
       buildCharSelect();
-      // Tambahkan setelah event listener keyboard yang sudah ada
+
+      // Inisialisasi audio setelah user mengklik area char select
+      const charSelectDiv = document.getElementById("char-select");
+
+      function initAudioOnUserClick() {
+        if (!audioCtx) {
+          initAudio();
+          createAudioControls();
+          playCharSelectMusic();
+          console.log("🎵 Audio diaktifkan!");
+        }
+        // Hapus event listener setelah pertama kali dijalankan
+        charSelectDiv.removeEventListener("click", initAudioOnUserClick);
+        charSelectDiv.removeEventListener("keydown", initAudioOnUserClick);
+      }
+
+      // Tambahkan event listener untuk klik dan keyboard
+      charSelectDiv.addEventListener("click", initAudioOnUserClick);
+      charSelectDiv.addEventListener("keydown", initAudioOnUserClick);
+
+      // Juga tambahkan listener untuk tombol scroll dan mulai
+      document
+        .getElementById("scroll-left")
+        ?.addEventListener("click", initAudioOnUserClick);
+      document
+        .getElementById("scroll-right")
+        ?.addEventListener("click", initAudioOnUserClick);
+      document
+        .getElementById("csel-go")
+        ?.addEventListener("click", function (e) {
+          // Jika audio belum aktif, aktifkan dulu
+          if (!audioCtx) {
+            e.preventDefault(); // Tunda start game
+            initAudio();
+            createAudioControls();
+            playCharSelectMusic();
+            // Setelah audio aktif, jalankan start game
+            setTimeout(() => {
+              startGame();
+            }, 100);
+          }
+        });
+
+      // ================================================================
+      // AUDIO SYSTEM - TARUH INI DI AWAL SEBELUM FUNGSI LAINNYA
+      // ================================================================
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      let audioCtx = null;
+      let bgMusic = null;
+      let musicGain = null;
+      let sfxGain = null;
+      let musicVolume = 0.4;
+      let sfxVolume = 0.6;
+      let isMusicPlaying = false;
+
+      function initAudio() {
+        if (audioCtx) return;
+        audioCtx = new AudioCtx();
+        musicGain = audioCtx.createGain();
+        musicGain.gain.value = musicVolume;
+        musicGain.connect(audioCtx.destination);
+        sfxGain = audioCtx.createGain();
+        sfxGain.gain.value = sfxVolume;
+        sfxGain.connect(audioCtx.destination);
+      }
+
+      // ================================================================
+      // SOUND EFFECTS (Web Audio API - tanpa file)
+      // ================================================================
+      function playHit() {
+        if (!audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(sfxGain);
+        osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(
+          80,
+          audioCtx.currentTime + 0.1,
+        );
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(
+          0.001,
+          audioCtx.currentTime + 0.1,
+        );
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.1);
+      }
+
+      function playExplosion() {
+        if (!audioCtx) return;
+        const bufferSize = audioCtx.sampleRate * 0.4;
+        const buffer = audioCtx.createBuffer(
+          1,
+          bufferSize,
+          audioCtx.sampleRate,
+        );
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+        const source = audioCtx.createBufferSource();
+        source.buffer = buffer;
+        const gain = audioCtx.createGain();
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = "lowpass";
+        filter.frequency.setValueAtTime(800, audioCtx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(
+          100,
+          audioCtx.currentTime + 0.4,
+        );
+        source.connect(filter);
+        filter.connect(gain);
+        gain.connect(sfxGain);
+        gain.gain.setValueAtTime(0.8, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(
+          0.001,
+          audioCtx.currentTime + 0.4,
+        );
+        source.start();
+        source.stop(audioCtx.currentTime + 0.4);
+      }
+
+      function playSkill() {
+        if (!audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "sawtooth";
+        osc.connect(gain);
+        gain.connect(sfxGain);
+        osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(
+          880,
+          audioCtx.currentTime + 0.15,
+        );
+        gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(
+          0.001,
+          audioCtx.currentTime + 0.2,
+        );
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.2);
+      }
+
+      function playHeal() {
+        if (!audioCtx) return;
+        [523, 659, 784].forEach((freq, i) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = "sine";
+          osc.connect(gain);
+          gain.connect(sfxGain);
+          const t = audioCtx.currentTime + i * 0.08;
+          osc.frequency.setValueAtTime(freq, t);
+          gain.gain.setValueAtTime(0.2, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+          osc.start(t);
+          osc.stop(t + 0.3);
+        });
+      }
+
+      function playLevelUp() {
+        if (!audioCtx) return;
+        [523, 659, 784, 1047].forEach((freq, i) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = "triangle";
+          osc.connect(gain);
+          gain.connect(sfxGain);
+          const t = audioCtx.currentTime + i * 0.1;
+          osc.frequency.setValueAtTime(freq, t);
+          gain.gain.setValueAtTime(0.3, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+          osc.start(t);
+          osc.stop(t + 0.35);
+        });
+      }
+
+      function playDeath() {
+        if (!audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "sawtooth";
+        osc.connect(gain);
+        gain.connect(sfxGain);
+        osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(
+          55,
+          audioCtx.currentTime + 0.6,
+        );
+        gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(
+          0.001,
+          audioCtx.currentTime + 0.6,
+        );
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.6);
+      }
+
+      function playTowerDestroy() {
+        if (!audioCtx) return;
+        playExplosion();
+        setTimeout(() => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = "square";
+          osc.connect(gain);
+          gain.connect(sfxGain);
+          osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(
+            50,
+            audioCtx.currentTime + 0.5,
+          );
+          gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(
+            0.001,
+            audioCtx.currentTime + 0.5,
+          );
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.5);
+        }, 100);
+      }
+
+      function playStageClear() {
+        if (!audioCtx) return;
+        const melody = [523, 659, 784, 1047, 784, 1047, 1319];
+        melody.forEach((freq, i) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = "triangle";
+          osc.connect(gain);
+          gain.connect(sfxGain);
+          const t = audioCtx.currentTime + i * 0.15;
+          osc.frequency.setValueAtTime(freq, t);
+          gain.gain.setValueAtTime(0.35, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+          osc.start(t);
+          osc.stop(t + 0.35);
+        });
+      }
+
+      function playBossAppear() {
+        if (!audioCtx) return;
+        [110, 98, 87, 73].forEach((freq, i) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = "sawtooth";
+          osc.connect(gain);
+          gain.connect(sfxGain);
+          const t = audioCtx.currentTime + i * 0.18;
+          osc.frequency.setValueAtTime(freq, t);
+          gain.gain.setValueAtTime(0.4, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+          osc.start(t);
+          osc.stop(t + 0.4);
+        });
+      }
+
+      function playBuy() {
+        if (!audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "sine";
+        osc.connect(gain);
+        gain.connect(sfxGain);
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(
+          1320,
+          audioCtx.currentTime + 0.1,
+        );
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(
+          0.001,
+          audioCtx.currentTime + 0.15,
+        );
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.15);
+      }
+
+      // ================================================================
+      // BACKGROUND MUSIC (Generated)
+      // ================================================================
+      function startBGMusic() {
+        if (!audioCtx || isMusicPlaying) return;
+        isMusicPlaying = true;
+
+        // Nada-nada gamelan Jawa sederhana
+        const scale = [261, 293, 329, 392, 440, 523, 587, 659, 784];
+
+        function playNote(freq, time, dur, vol = 0.08, type = "sine") {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = type;
+          osc.connect(gain);
+          gain.connect(musicGain);
+          osc.frequency.setValueAtTime(freq, time);
+          gain.gain.setValueAtTime(vol, time);
+          gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
+          osc.start(time);
+          osc.stop(time + dur + 0.05);
+        }
+
+        // Melodi utama (loop setiap 8 detik)
+        const melody = [
+          [392, 0.4],
+          [440, 0.4],
+          [523, 0.4],
+          [440, 0.4],
+          [392, 0.4],
+          [329, 0.4],
+          [293, 0.4],
+          [261, 0.8],
+          [329, 0.4],
+          [392, 0.4],
+          [440, 0.8],
+          [392, 0.4],
+          [329, 0.4],
+          [261, 0.4],
+          [293, 0.4],
+          [329, 0.8],
+        ];
+
+        // Bass
+        const bass = [
+          [130, 0.8],
+          [130, 0.8],
+          [146, 0.8],
+          [130, 0.8],
+          [110, 0.8],
+          [110, 0.8],
+          [123, 0.8],
+          [130, 0.8],
+        ];
+
+        let loopStart = audioCtx.currentTime;
+        const loopDuration = 6.4;
+
+        function scheduleLoop() {
+          if (!isMusicPlaying) return;
+
+          // Melodi
+          let t = loopStart;
+          melody.forEach(([freq, dur]) => {
+            playNote(freq, t, dur * 0.9, 0.07, "triangle");
+            t += dur;
+          });
+
+          // Bass
+          t = loopStart;
+          bass.forEach(([freq, dur]) => {
+            playNote(freq, t, dur * 0.8, 0.06, "sine");
+            t += dur;
+          });
+
+          // Perkusi (drum sederhana)
+          for (let i = 0; i < 8; i++) {
+            const kickTime = loopStart + i * 0.8;
+            const bufSize = audioCtx.sampleRate * 0.15;
+            const buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+            const d = buf.getChannelData(0);
+            for (let j = 0; j < bufSize; j++) d[j] = Math.random() * 2 - 1;
+            const src = audioCtx.createBufferSource();
+            src.buffer = buf;
+            const g = audioCtx.createGain();
+            const f = audioCtx.createBiquadFilter();
+            f.type = "lowpass";
+            f.frequency.value = 200;
+            src.connect(f);
+            f.connect(g);
+            g.connect(musicGain);
+            g.gain.setValueAtTime(0.12, kickTime);
+            g.gain.exponentialRampToValueAtTime(0.001, kickTime + 0.15);
+            src.start(kickTime);
+            src.stop(kickTime + 0.15);
+          }
+
+          loopStart += loopDuration;
+          setTimeout(scheduleLoop, (loopDuration - 1) * 1000);
+        }
+
+        scheduleLoop();
+      }
+
+      function stopBGMusic() {
+        isMusicPlaying = false;
+      }
+
+      // ================================================================
+      // MUSIK BERBEDA PER KONDISI
+      // ================================================================
+      function playCharSelectMusic() {
+        if (!audioCtx || isMusicPlaying) return;
+        isMusicPlaying = true;
+
+        // Musik menu lebih pelan dan santai
+        const notes = [
+          [523, 0.6],
+          [440, 0.6],
+          [392, 0.6],
+          [329, 0.6],
+          [349, 0.6],
+          [392, 0.6],
+          [440, 0.6],
+          [523, 1.2],
+        ];
+
+        let loopStart = audioCtx.currentTime;
+        const loopDur = 4.8;
+
+        function scheduleMenuLoop() {
+          if (!isMusicPlaying) return;
+          let t = loopStart;
+          notes.forEach(([freq, dur]) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = "sine";
+            osc.connect(gain);
+            gain.connect(musicGain);
+            osc.frequency.setValueAtTime(freq, t);
+            gain.gain.setValueAtTime(0.06, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+            osc.start(t);
+            osc.stop(t + dur + 0.05);
+            // Harmoni
+            const osc2 = audioCtx.createOscillator();
+            const gain2 = audioCtx.createGain();
+            osc2.type = "triangle";
+            osc2.connect(gain2);
+            gain2.connect(musicGain);
+            osc2.frequency.setValueAtTime(freq * 1.5, t);
+            gain2.gain.setValueAtTime(0.04, t);
+            gain2.gain.exponentialRampToValueAtTime(0.001, t + dur);
+            osc2.start(t);
+            osc2.stop(t + dur + 0.05);
+            t += dur;
+          });
+          loopStart += loopDur;
+          setTimeout(scheduleMenuLoop, (loopDur - 0.8) * 1000);
+        }
+        scheduleMenuLoop();
+      }
+
+      // ================================================================
+      // AUDIO CONTROLS UI
+      // ================================================================
+      function createAudioControls() {
+        const ctrl = document.createElement("div");
+        ctrl.id = "audio-ctrl";
+        ctrl.style.cssText = `
+    position: fixed; bottom: 76px; right: 6px;
+    display: flex; flex-direction: column; gap: 3px;
+    z-index: 100; pointer-events: auto;
+  `;
+        ctrl.innerHTML = `
+    <div style="display:flex;gap:4px;align-items:center;">
+      <button onclick="toggleMusic()" id="music-btn" style="
+        font-family:'Press Start 2P',monospace; font-size:6px;
+        padding:3px 5px; border:1px solid #555;
+        background:rgba(0,0,0,0.6); color:#aaa; cursor:pointer;
+      ">🎵 ON</button>
+      <input type="range" id="music-vol" min="0" max="100" value="40"
+        oninput="setMusicVol(this.value)"
+        style="width:50px; height:4px; cursor:pointer;" />
+    </div>
+    <div style="display:flex;gap:4px;align-items:center;">
+      <button onclick="toggleSFX()" id="sfx-btn" style="
+        font-family:'Press Start 2P',monospace; font-size:6px;
+        padding:3px 5px; border:1px solid #555;
+        background:rgba(0,0,0,0.6); color:#aaa; cursor:pointer;
+      ">🔊 ON</button>
+      <input type="range" id="sfx-vol" min="0" max="100" value="60"
+        oninput="setSFXVol(this.value)"
+        style="width:50px; height:4px; cursor:pointer;" />
+    </div>
+  `;
+        document.body.appendChild(ctrl);
+      }
+
+      let musicOn = true,
+        sfxOn = true;
+
+      function toggleMusic() {
+        musicOn = !musicOn;
+        if (musicGain) musicGain.gain.value = musicOn ? musicVolume : 0;
+        document.getElementById("music-btn").textContent = musicOn
+          ? "🎵 ON"
+          : "🎵 OFF";
+      }
+
+      function toggleSFX() {
+        sfxOn = !sfxOn;
+        if (sfxGain) sfxGain.gain.value = sfxOn ? sfxVolume : 0;
+        document.getElementById("sfx-btn").textContent = sfxOn
+          ? "🔊 ON"
+          : "🔊 OFF";
+      }
+
+      function setMusicVol(val) {
+        musicVolume = val / 100;
+        if (musicGain && musicOn) musicGain.gain.value = musicVolume;
+      }
+
+      function setSFXVol(val) {
+        sfxVolume = val / 100;
+        if (sfxGain && sfxOn) sfxGain.gain.value = sfxVolume;
+      }
+
+      // ================================================================
+      // MOBILE CONTROLS
+      // ================================================================
+      let mobileJoystick = {
+        active: false,
+        startX: 0,
+        startY: 0,
+        currentX: 0,
+        currentY: 0,
+        vx: 0,
+        vy: 0,
+      };
+      let mobileAttackPressed = false;
+      let mobileSkillPressed = {};
+
+      function initMobileControls() {
+        const isMobile =
+          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+            navigator.userAgent,
+          );
+        if (!isMobile) return;
+
+        const mobileControls = document.getElementById("mobile-controls");
+        if (!mobileControls) return;
+
+        mobileControls.classList.add("show");
+
+        checkOrientation();
+        window.addEventListener("orientationchange", checkOrientation);
+        window.addEventListener("resize", checkOrientation);
+
+        initJoystick();
+
+        // ========== PERBAIKAN: Jangan panggil updateMobileSkillBar di sini ==========
+        // Hapus baris: updateMobileSkillBar();
+
+        // const attackBtn = document.getElementById("attack-btn-mobile");
+        // if (attackBtn) {
+        //   attackBtn.addEventListener("touchstart", (e) => {
+        //     e.preventDefault();
+        //     mobileAttackPressed = true;
+        //   });
+        //   attackBtn.addEventListener("touchend", () => {
+        //     mobileAttackPressed = false;
+        //   });
+        //   attackBtn.addEventListener("touchcancel", () => {
+        //     mobileAttackPressed = false;
+        //   });
+        // }
+
+        // const shopBtnMobile = document.getElementById("shop-btn-mobile");
+        // if (shopBtnMobile) {
+        //   shopBtnMobile.addEventListener("click", () => {
+        //     toggleShop();
+        //   });
+        // }
+
+        const ctrlHint = document.getElementById("ctrl-hint");
+        if (ctrlHint) ctrlHint.style.display = "none";
+      }
+
+      function checkOrientation() {
+        const warning = document.getElementById("orientation-warning");
+        if (window.innerHeight > window.innerWidth) {
+          warning.classList.add("show");
+        } else {
+          warning.classList.remove("show");
+        }
+      }
+
+      function initJoystick() {
+        const container = document.getElementById("joystick-container");
+        const thumb = document.getElementById("joystick-thumb");
+        const maxDistance = 35;
+
+        const handleStart = (e) => {
+          e.preventDefault();
+          mobileJoystick.active = true;
+          const touch = e.touches ? e.touches[0] : e;
+          const rect = container.getBoundingClientRect();
+          mobileJoystick.startX = touch.clientX;
+          mobileJoystick.startY = touch.clientY;
+          mobileJoystick.centerX = rect.left + rect.width / 2;
+          mobileJoystick.centerY = rect.top + rect.height / 2;
+        };
+
+        const handleMove = (e) => {
+          if (!mobileJoystick.active) return;
+          e.preventDefault();
+          const touch = e.touches ? e.touches[0] : e;
+          let dx = touch.clientX - mobileJoystick.startX;
+          let dy = touch.clientY - mobileJoystick.startY;
+
+          // Batasi jarak
+          const distance = Math.hypot(dx, dy);
+          if (distance > maxDistance) {
+            dx = (dx / distance) * maxDistance;
+            dy = (dy / distance) * maxDistance;
+          }
+
+          // Update thumb position
+          thumb.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+
+          // Hitung arah joystick (nilai -1 sampai 1)
+          mobileJoystick.vx = dx / maxDistance;
+          mobileJoystick.vy = dy / maxDistance;
+        };
+
+        const handleEnd = () => {
+          mobileJoystick.active = false;
+          mobileJoystick.vx = 0;
+          mobileJoystick.vy = 0;
+          thumb.style.transform = "translate(-50%, -50%)";
+        };
+
+        container.addEventListener("touchstart", handleStart);
+        container.addEventListener("touchmove", handleMove);
+        container.addEventListener("touchend", handleEnd);
+        container.addEventListener("touchcancel", handleEnd);
+
+        // Mouse support untuk testing di desktop
+        container.addEventListener("mousedown", handleStart);
+        window.addEventListener("mousemove", handleMove);
+        window.addEventListener("mouseup", handleEnd);
+      }
+
+      function updateMobileSkillBar() {
+        if (!player) {
+          console.log("updateMobileSkillBar: no player");
+          return;
+        }
+
+        const container = document.getElementById("skill-buttons-mobile");
+        if (!container) {
+          console.warn("skill-buttons-mobile container not found!");
+          return;
+        }
+
+        console.log(
+          "Updating mobile skill bar, player skills:",
+          player.skills.length,
+        );
+        container.innerHTML = "";
+
+        player.skills.forEach((sk, i) => {
+          const btn = document.createElement("div");
+          btn.className = "skill-btn-mobile" + (sk.locked ? " locked" : "");
+          btn.setAttribute("data-skill-idx", i);
+          btn.innerHTML = `
+            <span class="sk-icon-mobile">${sk.icon}</span>
+            <span class="sk-name-mobile">${sk.name}</span>
+        `;
+
+          if (skillCDs[i] > 0 && !sk.locked) {
+            const cdDiv = document.createElement("div");
+            cdDiv.className = "sk-cd-mobile";
+            cdDiv.textContent = Math.ceil(skillCDs[i]);
+            btn.appendChild(cdDiv);
+          } else if (sk.locked) {
+            const lockDiv = document.createElement("div");
+            lockDiv.className = "sk-cd-mobile";
+            lockDiv.textContent = `Lv${sk.unlockLv}`;
+            btn.appendChild(lockDiv);
+          }
+
+          // ========== PERBAIKAN: Gunakan satu event handler yang konsisten ==========
+          const skillHandler = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            console.log(`Skill button ${i} pressed:`, sk.name);
+            console.log(
+              "Game state - gameActive:",
+              gameActive,
+              "player dead:",
+              player?.dead,
+              "respawning:",
+              respawning,
+              "shopOpen:",
+              shopOpen,
+            );
+
+            // Cek kondisi game
+            if (!gameActive) {
+              console.log("Game not active");
+              return;
+            }
+            if (!player || player.dead) {
+              console.log("Player dead or null");
+              return;
+            }
+            if (respawning) {
+              console.log("Respawning");
+              return;
+            }
+            if (shopOpen) {
+              console.log("Shop open");
+              return;
+            }
+            if (sk.locked) {
+              console.log("Skill locked");
+              return;
+            }
+            if (skillCDs[i] > 0) {
+              console.log("Skill on cooldown:", skillCDs[i]);
+              return;
+            }
+            if (player.mp < sk.mp) {
+              console.log("Not enough MP:", player.mp, "/", sk.mp);
+              showMPWarning();
+              return;
+            }
+
+            console.log("Calling useSkill for index:", i);
+            useSkill(i);
+          };
+
+          // Hanya gunakan addEventListener, jangan pakai onclick
+          btn.addEventListener("click", skillHandler);
+          btn.addEventListener("touchstart", skillHandler, { passive: false });
+
+          container.appendChild(btn);
+        });
+
+        console.log(
+          "Mobile skill bar updated, buttons:",
+          container.children.length,
+        );
+      }
+
+      // ========== PERBAIKAN: Fungsi terpisah untuk inisialisasi skill bar mobile ==========
+      let mobileSkillBarInitialized = false;
+
+      function initMobileSkillBar() {
+        if (mobileSkillBarInitialized) return;
+        if (!player) {
+          setTimeout(() => initMobileSkillBar(), 100);
+          return;
+        }
+
+        console.log("INIT Mobile skill bar - called ONCE");
+        const container = document.getElementById("skill-buttons-mobile");
+        if (!container) {
+          console.warn("skill-buttons-mobile container not found!");
+          return;
+        }
+
+        container.innerHTML = "";
+
+        player.skills.forEach((sk, i) => {
+          const btn = document.createElement("div");
+          btn.className = "skill-btn-mobile" + (sk.locked ? " locked" : "");
+          btn.setAttribute("data-skill-idx", i);
+
+          btn.innerHTML = `
+            <span class="sk-icon-mobile">${sk.icon}</span>
+            <span class="sk-name-mobile">${sk.name}</span>
+            <span class="sk-mp-mobile" style="font-size: 8px; color: #88aaff;">${sk.mp} MP</span>
+        `;
+
+          if (sk.locked) {
+            const lockDiv = document.createElement("div");
+            lockDiv.className = "sk-cd-mobile";
+            lockDiv.textContent = `Lv${sk.unlockLv}`;
+            btn.appendChild(lockDiv);
+          }
+
+          // ========== PERBAIKAN: Pastikan idx = i ==========
+          const skillHandler = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const idx = parseInt(btn.getAttribute("data-skill-idx"));
+            console.log(
+              `🔘 Mobile skill button CLICKED - stored idx: ${idx}, current i: ${i}`,
+            );
+            console.log(`Skill name: ${sk.name}`);
+            console.log(`Current skillCDs[${idx}]: ${skillCDs[idx]}`);
+
+            if (!gameActive) {
+              console.log("❌ Game not active");
+              return;
+            }
+            if (!player || player.dead) {
+              console.log("❌ Player dead or null");
+              return;
+            }
+            if (respawning) {
+              console.log("❌ Respawning");
+              return;
+            }
+            if (shopOpen) {
+              console.log("❌ Shop open");
+              return;
+            }
+            if (sk.locked) {
+              console.log(`❌ Skill locked`);
+              return;
+            }
+            if (skillCDs[idx] > 0) {
+              console.log(`❌ Skill on cooldown: ${skillCDs[idx].toFixed(1)}s`);
+              return;
+            }
+            if (player.mp < sk.mp) {
+              console.log(`❌ Not enough MP: ${player.mp}/${sk.mp}`);
+              showMPWarning();
+              return;
+            }
+
+            console.log(`✅ Calling useSkill(${idx})`);
+            useSkill(idx);
+          };
+
+          btn.addEventListener("click", skillHandler);
+          btn.addEventListener("touchstart", skillHandler, { passive: false });
+
+          container.appendChild(btn);
+          console.log(
+            `Created button for skill ${i}: ${sk.name}, CD: ${sk.cd}s`,
+          );
+        });
+
+        mobileSkillBarInitialized = true;
+      }
+
+      function updateMobileCDs() {
+        // Proteksi dasar
+        if (!player || !gameActive) return;
+
+        const btns = document.querySelectorAll(".skill-btn-mobile");
+        if (!btns || btns.length === 0) return;
+
+        btns.forEach((btn) => {
+          // Proteksi: pastikan btn masih ada
+          if (!btn || !btn.isConnected) return;
+
+          const idx = btn.getAttribute("data-skill-idx");
+          if (!idx) return;
+
+          const skillIdx = parseInt(idx);
+          if (isNaN(skillIdx)) return;
+          if (!player.skills || !player.skills[skillIdx]) return;
+
+          const sk = player.skills[skillIdx];
+          let cdOverlay = btn.querySelector(".sk-cd-mobile");
+        });
+      }
+
+      // Override input untuk mobile
+      function handleMobileInput() {
+        if (!player || player.dead || respawning || shopOpen) return;
+
+        // Joystick movement
+        if (
+          mobileJoystick.active ||
+          mobileJoystick.vx !== 0 ||
+          mobileJoystick.vy !== 0
+        ) {
+          const speed = player.spd * (playerSpeedMult || 1);
+          player.vx = mobileJoystick.vx * speed;
+          player.vy = mobileJoystick.vy * speed;
+
+          // Update direction
+          if (Math.abs(mobileJoystick.vx) > 0.1) {
+            player.dir = mobileJoystick.vx > 0 ? 1 : -1;
+          }
+        } else {
+          // Jika joystick tidak aktif, perlambat
+          player.vx *= 0.9;
+          player.vy *= 0.9;
+        }
+
+        // Auto attack (tombol attack)
+        if (mobileAttackPressed && player.atkTimer <= 0 && !shopOpen) {
+          const autoTargets = [...enemies, ...enemyTowers].filter(
+            (e) => !e.dead,
+          );
+          let at = null,
+            ad = 9999;
+          autoTargets.forEach((e) => {
+            const d = dist2(player, e);
+            if (d < ad && d <= player.range) {
+              ad = d;
+              at = e;
+            }
+          });
+          if (at) {
+            const raw = Math.floor(
+              ri(player.atk - 4, player.atk + 8) * (playerRageMult || 1),
+            );
+            if (player.range > 100) {
+              fireProjectile(player, at, raw, 8, "#ffd700", "•");
+            } else {
+              dealDamage(at, raw, player);
+              spawnHitParticle(at.x, at.y, "#ffd700");
+            }
+            if (at.hp <= 0 && at.destroyed === undefined && !at.dead)
+              killEntity(at, player);
+            if (at.destroyed !== undefined && at.hp <= 0 && !at.destroyed)
+              killTower(at, false);
+            player.atkTimer = player.atkCD;
+          }
+        }
+      }
+
+      // Di akhir script, pastikan mobile controls diinisialisasi setelah DOM siap
+      document.addEventListener("DOMContentLoaded", function () {
+        // Inisialisasi mobile controls setelah semua elemen ada
+        setTimeout(() => {
+          initMobileControls();
+        }, 100);
+      });
     </script>
   </body>
 </html>
